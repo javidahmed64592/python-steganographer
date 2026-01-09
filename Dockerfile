@@ -1,14 +1,17 @@
-# Multi-stage Dockerfile for Python Template Server
+# Multi-stage Dockerfile for Python Steganographer
 # Stage 1: Build stage - build wheel using uv
 FROM python:3.13-slim AS backend-builder
 
 WORKDIR /build
 
+# Install Git for dependency resolution
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
 # Install uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Copy backend source files
-COPY python_template_server/ ./python_template_server/
+COPY python_steganographer/ ./python_steganographer/
 COPY pyproject.toml .here LICENSE README.md ./
 
 # Build the wheel
@@ -18,6 +21,9 @@ RUN uv build --wheel
 FROM python:3.13-slim
 
 WORKDIR /app
+
+# Install Git for dependency resolution
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
 # Install uv in runtime stage
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
@@ -52,7 +58,7 @@ RUN echo '#!/bin/sh\n\
     export $(grep -v "^#" .env | xargs)\n\
     fi\n\
     \n\
-    exec python-template-server --port $PORT' > /app/start.sh && \
+    exec python-steganographer --port $PORT' > /app/start.sh && \
     chmod +x /app/start.sh
 
 # Expose server port

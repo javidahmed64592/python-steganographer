@@ -10,11 +10,11 @@ on:
   workflow_dispatch:
 
 env:
-  PACKAGE_NAME: python_template_server
-  INSTALLER_NAME: install_template_server.sh
-  SERVICE_NAME: python-template-server.service
-  UNINSTALLER_NAME: uninstall_template_server.sh
-  CONTAINER_NAME: python-template-server
+  PACKAGE_NAME: python_steganographer
+  INSTALLER_NAME: install_steganographer.sh
+  SERVICE_NAME: python-steganographer.service
+  UNINSTALLER_NAME: uninstall_steganographer.sh
+  CONTAINER_NAME: python-steganographer
 
 jobs:
   build-docker:
@@ -231,9 +231,9 @@ jobs:
         id: release_notes
         run: |
           cat > release_notes.md << 'EOF'
-          ## Python Template Server v${{ steps.get_version.outputs.version }}
+          ## Python Steganographer v${{ steps.get_version.outputs.version }}
 
-          **A template FastAPI server with production-ready configuration.**
+          **A FastAPI application for steganography.**
 
           ### Quick Start
 
@@ -254,7 +254,6 @@ jobs:
 
           - [README](https://github.com/${{ github.repository }}/blob/main/README.md)
           - [API Documentation](https://github.com/${{ github.repository }}/blob/main/docs/API.md)
-          - [Docker Deployment](https://github.com/${{ github.repository }}/blob/main/docs/DOCKER_DEPLOYMENT.md)
           EOF
           echo "release_notes_file=release_notes.md" >> $GITHUB_OUTPUT
 
@@ -263,7 +262,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.get_version.outputs.tag }}
-          name: "Python Template Server ${{ steps.get_version.outputs.version }}"
+          name: "Python Steganographer ${{ steps.get_version.outputs.version }}"
           body_path: ${{ steps.release_notes.outputs.release_notes_file }}
           draft: false
           prerelease: false

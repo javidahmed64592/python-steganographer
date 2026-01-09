@@ -14,7 +14,7 @@ class SteganographerServer(TemplateServer):
     """FastAPI steganographer server."""
 
     def __init__(self, config: SteganographerServerConfig | None = None) -> None:
-        """Initialize the TemplateServer.
+        """Initialize the SteganographerServer.
 
         :param SteganographerServerConfig | None config: Optional pre-loaded configuration
         """

@@ -2,7 +2,6 @@
 
 import numpy as np
 import pytest
-from numpy.typing import NDArray
 
 from python_steganographer.algorithms import DCTAlgorithm, LSBAlgorithm
 from python_steganographer.constants import MAX_BITS_PER_PIXEL, NUM_BITS
@@ -11,14 +10,14 @@ from python_steganographer.constants import MAX_BITS_PER_PIXEL, NUM_BITS
 class TestLSBHelperFunctions:
     """Test the LSB helper functions."""
 
-    def test_even_img(self, mock_image_channel: NDArray[np.uint8]) -> None:
+    def test_even_img(self, mock_image_channel: np.ndarray[np.uint8]) -> None:
         """Test the even_img function."""
         result = LSBAlgorithm.even_img(mock_image_channel)
         assert np.all(result % 2 == 0)
         assert result.shape == mock_image_channel.shape
         assert result.dtype == mock_image_channel.dtype
 
-    def test_insert_msg_basic(self, mock_image_channel: NDArray[np.uint8]) -> None:
+    def test_insert_msg_basic(self, mock_image_channel: np.ndarray[np.uint8]) -> None:
         """Test basic message insertion."""
         # Create a simple test image (all even values) and flatten it
         test_img = LSBAlgorithm.even_img(mock_image_channel).flatten()
@@ -51,7 +50,7 @@ class TestLSBHelperFunctions:
         result = LSBAlgorithm.extract_msg(test_img)
         assert "A" in result
 
-    def test_roundtrip_message(self, mock_image_channel: NDArray[np.uint8]) -> None:
+    def test_roundtrip_message(self, mock_image_channel: np.ndarray[np.uint8]) -> None:
         """Test that a message can be inserted and extracted correctly."""
         original_msg = "Hello!"
         flattened = mock_image_channel.flatten()
@@ -82,7 +81,7 @@ class TestLSBAlgorithm:
         with pytest.raises(NotImplementedError, match="Multi-bit LSB not yet implemented"):
             LSBAlgorithm(bits_per_pixel=2)
 
-    def test_embed_data(self, lsb_algorithm: LSBAlgorithm, mock_image_channel: NDArray[np.uint8]) -> None:
+    def test_embed_data(self, lsb_algorithm: LSBAlgorithm, mock_image_channel: np.ndarray[np.uint8]) -> None:
         """Test basic data embedding."""
         test_message = "Test"
 
@@ -93,7 +92,7 @@ class TestLSBAlgorithm:
         assert result.dtype == mock_image_channel.dtype
 
     def test_embed_data_message_too_large(
-        self, lsb_algorithm: LSBAlgorithm, mock_image_channel: NDArray[np.uint8]
+        self, lsb_algorithm: LSBAlgorithm, mock_image_channel: np.ndarray[np.uint8]
     ) -> None:
         """Test that embedding fails when message is too large."""
         large_message = "A" * 1000
@@ -101,13 +100,15 @@ class TestLSBAlgorithm:
         with pytest.raises(ValueError, match="Message too large for image"):
             lsb_algorithm.embed_data(mock_image_channel, large_message)
 
-    def test_extract_data(self, lsb_algorithm: LSBAlgorithm, mock_image_channel: NDArray[np.uint8]) -> None:
+    def test_extract_data(self, lsb_algorithm: LSBAlgorithm, mock_image_channel: np.ndarray[np.uint8]) -> None:
         """Test basic data extraction."""
         result = lsb_algorithm.extract_data(mock_image_channel)
 
         assert isinstance(result, str)
 
-    def test_embed_extract_roundtrip(self, lsb_algorithm: LSBAlgorithm, mock_image_channel: NDArray[np.uint8]) -> None:
+    def test_embed_extract_roundtrip(
+        self, lsb_algorithm: LSBAlgorithm, mock_image_channel: np.ndarray[np.uint8]
+    ) -> None:
         """Test complete embed and extract cycle."""
         original_message = "Secret message!"
 
@@ -312,7 +313,7 @@ class TestDCTAlgorithm:
         with pytest.raises(ValueError, match="quantization_factor must be positive"):
             DCTAlgorithm(quantization_factor=-5)
 
-    def test_embed_data_basic(self, dct_algorithm: DCTAlgorithm, mock_image_channel: NDArray[np.uint8]) -> None:
+    def test_embed_data_basic(self, dct_algorithm: DCTAlgorithm, mock_image_channel: np.ndarray[np.uint8]) -> None:
         """Test basic data embedding."""
         test_message = "Hi"
 
@@ -326,7 +327,9 @@ class TestDCTAlgorithm:
         # Should be different from original (unless extremely unlikely)
         assert not np.array_equal(modified_channel, mock_image_channel)
 
-    def test_embed_data_empty_message(self, dct_algorithm: DCTAlgorithm, mock_image_channel: NDArray[np.uint8]) -> None:
+    def test_embed_data_empty_message(
+        self, dct_algorithm: DCTAlgorithm, mock_image_channel: np.ndarray[np.uint8]
+    ) -> None:
         """Test embedding empty message."""
         # Should work without error
         modified_channel = dct_algorithm.embed_data(mock_image_channel, "")
@@ -335,7 +338,7 @@ class TestDCTAlgorithm:
         assert modified_channel.shape == mock_image_channel.shape
 
     def test_embed_data_message_too_large(
-        self, dct_algorithm: DCTAlgorithm, mock_image_channel: NDArray[np.uint8]
+        self, dct_algorithm: DCTAlgorithm, mock_image_channel: np.ndarray[np.uint8]
     ) -> None:
         """Test that embedding too large message raises error."""
         large_message = "A" * 1000
@@ -343,7 +346,7 @@ class TestDCTAlgorithm:
         with pytest.raises(ValueError, match="Message too large for image"):
             dct_algorithm.embed_data(mock_image_channel, large_message)
 
-    def test_extract_data_basic(self, dct_algorithm: DCTAlgorithm, mock_image_channel: NDArray[np.uint8]) -> None:
+    def test_extract_data_basic(self, dct_algorithm: DCTAlgorithm, mock_image_channel: np.ndarray[np.uint8]) -> None:
         """Test basic data extraction."""
         # Should be able to extract from any channel without error
         result = dct_algorithm.extract_data(mock_image_channel)
@@ -361,7 +364,7 @@ class TestDCTAlgorithm:
         ],
     )
     def test_embed_extract_roundtrip(
-        self, dct_algorithm: DCTAlgorithm, mock_image_channel: NDArray[np.uint8], message: str
+        self, dct_algorithm: DCTAlgorithm, mock_image_channel: np.ndarray[np.uint8], message: str
     ) -> None:
         """Test roundtrip with various message types."""
         modified_channel = dct_algorithm.embed_data(mock_image_channel, message)

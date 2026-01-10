@@ -33,10 +33,8 @@ def char_to_byte_list(char: str) -> list[int]:
     char_to_byte_list("a") # [1, 1, 0, 0, 0, 0, 1]
     ```
 
-    :param str char:
-        Single ASCII character to convert to a list of bits
-    :return list[int]:
-        List of bits representing the ASCII character, padded to length 7
+    :param str char: Single ASCII character to convert to a list of bits
+    :return list[int]: List of bits representing the ASCII character, padded to length 7
     """
     char_bin = bin(ord(char))
     char_bytes = char_bin[2:]
@@ -47,10 +45,9 @@ def char_to_byte_list(char: str) -> list[int]:
 def msg_to_bytes_list(msg: str) -> list[int]:
     """Convert an ASCII message to a list of bytes of length (7 * length of message).
 
-    :param str msg:
+    :param str msg: Sequence of ASCII characters
         Sequence of ASCII characters
-    :return list[int]:
-        List of bytes representing the ASCII message
+    :return list[int]: List of bytes representing the ASCII message
     """
     byte_list = []
     for char in msg:
@@ -65,10 +62,8 @@ def byte_list_to_char(byte_list: list[int]) -> str:
     byte_list_to_char([1, 1, 0, 0, 0, 0, 1]) # "a"
     ```
 
-    :param list[int] byte_list:
-        Character represented as a list of bits (up to 7 bits)
-    :return str:
-        Single ASCII character
+    :param list[int] byte_list: Character represented as a list of bits (up to 7 bits)
+    :return str: Single ASCII character
     """
     if len(byte_list) < NUM_BITS:
         byte_list = [0] * (NUM_BITS - len(byte_list)) + byte_list
@@ -81,10 +76,8 @@ def byte_list_to_char(byte_list: list[int]) -> str:
 def bytes_list_to_msg(bytes_list: list[int]) -> str:
     """Convert a list of bytes to a message.
 
-    :param list[int] bytes_list:
-        Characters represented as a list of bits
-    :return str:
-        Message in bytes_list
+    :param list[int] bytes_list: Characters represented as a list of bits
+    :return str: Message in bytes_list
     """
     char_list = []
     i = 0

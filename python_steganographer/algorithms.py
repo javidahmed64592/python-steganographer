@@ -8,9 +8,8 @@ from scipy.fft import dct, idct
 from python_steganographer.constants import (
     DEFAULT_BLOCK_SIZE,
     DEFAULT_DCT_COEFFICIENT,
-    MAX_BITS_PER_PIXEL,
+    DEFAULT_QUANTIZATION_FACTOR,
     NUM_BITS,
-    QUANTIZATION_FACTOR,
 )
 from python_steganographer.helpers import bytes_list_to_msg, msg_to_bytes_list
 
@@ -61,22 +60,6 @@ class LSBAlgorithm(AlgorithmBase):
     statistical analysis.
     """
 
-    def __init__(self, bits_per_pixel: int = 1) -> None:
-        """Initialize LSB algorithm.
-
-        :param int bits_per_pixel:
-            Number of least significant bits to use (1-8).
-            Higher values provide more capacity but lower quality.
-        """
-        if not 1 <= bits_per_pixel <= MAX_BITS_PER_PIXEL:
-            msg = "bits_per_pixel must be between 1 and 8"
-            raise ValueError(msg)
-
-        self.bits_per_pixel = bits_per_pixel
-        if bits_per_pixel > 1:
-            msg = "Multi-bit LSB not yet implemented, using 1 bit per pixel"
-            raise NotImplementedError(msg)
-
     def embed_data(self, channel: np.ndarray[np.uint8], data: str) -> np.ndarray[np.uint8]:
         """Embed data into image channel using LSB steganography.
 
@@ -111,16 +94,11 @@ class LSBAlgorithm(AlgorithmBase):
     def calculate_capacity(self, channel_shape: tuple[int, ...]) -> int:
         """Calculate data capacity for this channel using LSB.
 
-        For LSB with 1 bit per pixel, capacity is (total_pixels * bits_per_pixel) / 8
-        since each character needs 7 bits in the current implementation.
-
         :param tuple[int, ...] channel_shape: Shape of the image channel
         :return int: Maximum number of characters that can be embedded
         """
         total_pixels = np.prod(channel_shape)
-        total_bits = total_pixels * self.bits_per_pixel
-        # Each character uses 7 bits in current implementation
-        return int(total_bits // NUM_BITS)
+        return int(total_pixels // NUM_BITS)
 
     @staticmethod
     def even_img(img: np.ndarray[np.uint8]) -> np.ndarray[np.uint8]:
@@ -190,7 +168,7 @@ class DCTAlgorithm(AlgorithmBase):
         self,
         block_size: int = DEFAULT_BLOCK_SIZE,
         dct_coefficient: int = DEFAULT_DCT_COEFFICIENT,
-        quantization_factor: int = QUANTIZATION_FACTOR,
+        quantization_factor: int = DEFAULT_QUANTIZATION_FACTOR,
     ) -> None:
         """Initialize DCT algorithm.
 
@@ -352,9 +330,7 @@ class DCTAlgorithm(AlgorithmBase):
         return idct(idct(dct_block.T, norm="ortho").T, norm="ortho")  # type: ignore[no-any-return]
 
     @staticmethod
-    def split_into_blocks(
-        channel: np.ndarray[np.uint8], block_size: int = DEFAULT_BLOCK_SIZE
-    ) -> list[np.ndarray[np.float64]]:
+    def split_into_blocks(channel: np.ndarray[np.uint8], block_size: int) -> list[np.ndarray[np.float64]]:
         """Split image channel into blocks for DCT processing.
 
         :param np.ndarray[np.uint8] channel: Image channel to split
@@ -374,7 +350,7 @@ class DCTAlgorithm(AlgorithmBase):
 
     @staticmethod
     def reconstruct_from_blocks(
-        blocks: list[np.ndarray[np.float64]], original_shape: tuple[int, int], block_size: int = DEFAULT_BLOCK_SIZE
+        blocks: list[np.ndarray[np.float64]], original_shape: tuple[int, int], block_size: int
     ) -> np.ndarray[np.uint8]:
         """Reconstruct image channel from processed blocks.
 
@@ -399,7 +375,7 @@ class DCTAlgorithm(AlgorithmBase):
         return reconstructed.astype(np.uint8)
 
     @staticmethod
-    def embed_bit_in_dct_coefficient(dct_coeff: float, bit: int, quantization: int = QUANTIZATION_FACTOR) -> float:
+    def embed_bit_in_dct_coefficient(dct_coeff: float, bit: int, quantization: int) -> float:
         """Embed a bit in a DCT coefficient using quantization.
 
         :param float dct_coeff: Original DCT coefficient
@@ -424,7 +400,7 @@ class DCTAlgorithm(AlgorithmBase):
         return quantized * quantization
 
     @staticmethod
-    def extract_bit_from_dct_coefficient(dct_coeff: float, quantization: int = QUANTIZATION_FACTOR) -> int:
+    def extract_bit_from_dct_coefficient(dct_coeff: float, quantization: int) -> int:
         """Extract a bit from a DCT coefficient.
 
         :param float dct_coeff: DCT coefficient to extract bit from

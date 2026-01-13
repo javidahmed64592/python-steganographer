@@ -63,7 +63,7 @@ def mock_load_image(mock_big_image: np.ndarray[np.uint8]) -> Generator[MagicMock
 @pytest.fixture
 def mock_image_instance_lsb(mock_load_image: MagicMock) -> Image:
     """Create an Image instance with LSB algorithm."""
-    mock_image_instance = Image.lsb(bits_per_pixel=1)
+    mock_image_instance = Image.lsb()
     mock_image_instance.load_image(filepath=Path("dummy_path"))
     return mock_image_instance
 

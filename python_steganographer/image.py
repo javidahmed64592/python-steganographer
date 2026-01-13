@@ -22,16 +22,15 @@ class Image:
         self.array: NDArray[np.uint8] = np.array([])
 
     @classmethod
-    def lsb(cls, bits_per_pixel: int = 1) -> Image:
+    def lsb(cls) -> Image:
         """Initialize the image class with LSB algorithm.
 
-        :param int bits_per_pixel: Number of LSB bits to use per pixel (currently only 1 is supported)
         :return Image: Image instance with LSB algorithm
         """
-        return cls(algorithm=LSBAlgorithm(bits_per_pixel=bits_per_pixel))
+        return cls(algorithm=LSBAlgorithm())
 
     @classmethod
-    def dct(cls, block_size: int = 8, dct_coefficient: int = 3, quantization_factor: int = 10) -> Image:
+    def dct(cls, block_size: int, dct_coefficient: int, quantization_factor: int) -> Image:
         """Initialize the image class with DCT algorithm.
 
         :param int block_size: Size of DCT blocks (typically 8x8)

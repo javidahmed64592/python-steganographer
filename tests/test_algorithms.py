@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from python_steganographer.algorithms import DCTAlgorithm, LSBAlgorithm
-from python_steganographer.constants import MAX_BITS_PER_PIXEL, NUM_BITS
+from python_steganographer.constants import NUM_BITS
 
 
 class TestLSBHelperFunctions:
@@ -67,19 +67,6 @@ class TestLSBHelperFunctions:
 
 class TestLSBAlgorithm:
     """Test the LSBAlgorithm class."""
-
-    def test_initialization_invalid_bits(self) -> None:
-        """Test that initialization fails with invalid bits per pixel."""
-        with pytest.raises(ValueError, match="bits_per_pixel must be between 1 and"):
-            LSBAlgorithm(bits_per_pixel=0)
-
-        with pytest.raises(ValueError, match="bits_per_pixel must be between 1 and"):
-            LSBAlgorithm(bits_per_pixel=MAX_BITS_PER_PIXEL + 1)
-
-    def test_initialization_multi_bit_not_implemented(self) -> None:
-        """Test that multi-bit LSB raises NotImplementedError."""
-        with pytest.raises(NotImplementedError, match="Multi-bit LSB not yet implemented"):
-            LSBAlgorithm(bits_per_pixel=2)
 
     def test_embed_data(self, lsb_algorithm: LSBAlgorithm, mock_image_channel: np.ndarray[np.uint8]) -> None:
         """Test basic data embedding."""

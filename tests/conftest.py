@@ -8,7 +8,6 @@ import numpy as np
 import pytest
 
 from python_steganographer.algorithms import DCTAlgorithm, LSBAlgorithm
-from python_steganographer.encryption import EncryptionHandler
 from python_steganographer.image import Image
 from python_steganographer.models import SteganographerServerConfig
 
@@ -35,12 +34,6 @@ def dct_algorithm() -> DCTAlgorithm:
     return DCTAlgorithm()
 
 
-@pytest.fixture
-def mock_encryption_handler() -> EncryptionHandler:
-    """Create an EncryptionHandler instance."""
-    return EncryptionHandler()
-
-
 # Image fixtures
 @pytest.fixture
 def mock_image() -> np.ndarray[np.uint8]:
@@ -50,8 +43,8 @@ def mock_image() -> np.ndarray[np.uint8]:
 
 @pytest.fixture
 def mock_big_image() -> np.ndarray[np.uint8]:
-    """Create a sample 1000x1000x3 image for testing."""
-    return rng.integers(0, 256, size=(1000, 1000, 3), dtype=np.uint8)
+    """Create a sample 900x900x3 image for testing."""
+    return rng.integers(0, 256, size=(900, 900, 3), dtype=np.uint8)
 
 
 @pytest.fixture

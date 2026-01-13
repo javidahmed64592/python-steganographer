@@ -10,17 +10,14 @@ from cryptography.hazmat.primitives.asymmetric import padding, rsa
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey, RSAPublicKey
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
+from python_steganographer.constants import DEFAULT_AES_KEY_SIZE, DEFAULT_IV_SIZE, DEFAULT_PRIVATE_KEY_SIZE
+
 
 class EncryptionHandler:
     """Handler class for encryption and decryption operations."""
 
     def __init__(
-        self,
-        private_key: RSAPrivateKey | None = None,
-        iv: bytes | None = None,
-        aes_key: bytes | None = None,
-        iv_size: int = 16,
-        aes_key_size: int = 32,
+        self, private_key: RSAPrivateKey | None = None, iv: bytes | None = None, aes_key: bytes | None = None
     ) -> None:
         """Initialize the KeysType with RSA keys and AES key.
 
@@ -31,11 +28,11 @@ class EncryptionHandler:
         :param int aes_key_size: Size of the AES key (default: 32 bytes)
         """
         self.private_key = private_key or rsa.generate_private_key(
-            public_exponent=65537, key_size=2048, backend=default_backend()
+            public_exponent=65537, key_size=DEFAULT_PRIVATE_KEY_SIZE, backend=default_backend()
         )
         self.public_key = self.private_key.public_key()
-        self.iv = iv or os.urandom(iv_size)
-        self.aes_key = aes_key or os.urandom(aes_key_size)
+        self.iv = iv or os.urandom(DEFAULT_IV_SIZE)
+        self.aes_key = aes_key or os.urandom(DEFAULT_AES_KEY_SIZE)
 
     @staticmethod
     def private_key_to_str(private_key: RSAPrivateKey) -> str:
@@ -134,31 +131,35 @@ class EncryptionHandler:
             padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None),
         )
 
-    @staticmethod
-    def encrypt(aes_key: bytes, iv: bytes, public_key: RSAPublicKey, msg: str) -> tuple[bytes, bytes]:
+    def encrypt(self, msg: str) -> tuple[bytes, bytes]:
         """Encrypt a message using AES encryption and RSA public key encryption.
 
-        :param bytes aes_key: AES key for encryption
-        :param bytes iv: Initialization vector for encryption
-        :param RSAPublicKey public_key: RSA public key for encrypting the AES key
         :param str msg: Message to encrypt
         :return tuple[bytes, bytes]: Encrypted data and encrypted AES key
         """
-        encrypted_msg = EncryptionHandler.encrypt_with_aes(aes_key, iv, bytes(msg, "utf-8"))
-        encrypted_aes_key = EncryptionHandler.encrypt_with_rsa(public_key, aes_key)
-        encrypted_data = iv + encrypted_msg
+        encrypted_msg = self.encrypt_with_aes(self.aes_key, self.iv, bytes(msg, "utf-8"))
+        encrypted_aes_key = self.encrypt_with_rsa(self.public_key, self.aes_key)
+        encrypted_data = self.iv + encrypted_msg
         return encrypted_data, encrypted_aes_key
 
-    @staticmethod
-    def decrypt(msg: bytes, encrypted_aes_key: bytes, private_key: RSAPrivateKey) -> str:
+    @classmethod
+    def from_encrypted(cls, private_key: RSAPrivateKey, encrypted_aes_key: bytes, msg: bytes) -> EncryptionHandler:
+        """Create an EncryptionHandler instance from encrypted data.
+
+        :param RSAPrivateKey private_key: RSA private key for decrypting the AES key
+        :param bytes encrypted_aes_key: Encrypted AES key for decryption
+        :param bytes msg: Encrypted message containing the IV and encrypted data
+        :return EncryptionHandler: Instance of EncryptionHandler with decrypted AES key and IV
+        """
+        extracted_iv = msg[:DEFAULT_IV_SIZE]
+        decrypted_aes_key = cls.decrypt_with_rsa(private_key, encrypted_aes_key)
+        return cls(private_key=private_key, iv=extracted_iv, aes_key=decrypted_aes_key)
+
+    def decrypt(self, msg: bytes) -> str:
         """Decrypt a message using AES decryption and RSA private key decryption.
 
         :param bytes msg: Encrypted message containing the IV and encrypted data
-        :param bytes encrypted_aes_key: Encrypted AES key for decryption
-        :param RSAPrivateKey private_key: RSA private key for decrypting the AES key
         :return str: Decrypted message
         """
-        extracted_iv = msg[:16]
         extracted_encrypted_msg = msg[16:]
-        decrypted_aes_key = EncryptionHandler.decrypt_with_rsa(private_key, encrypted_aes_key)
-        return EncryptionHandler.decrypt_with_aes(decrypted_aes_key, extracted_iv, extracted_encrypted_msg)
+        return EncryptionHandler.decrypt_with_aes(self.aes_key, self.iv, extracted_encrypted_msg)

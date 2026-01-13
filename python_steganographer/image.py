@@ -78,15 +78,13 @@ class Image:
         channel_data = self.array[:, :, channel]
         return self.algorithm.extract_data(channel_data)
 
-    def encode(self, encryption_handler: EncryptionHandler, msg: str) -> None:
+    def encode(self, msg: str) -> None:
         """Add encrypted message into image array.
 
         :param str msg: Message to insert into the image
-        :param EncryptionHandler encryption_handler: Encryption keys for the image
         """
-        encrypted_data, encrypted_aes_key = EncryptionHandler.encrypt(
-            encryption_handler.aes_key, encryption_handler.iv, encryption_handler.public_key, msg
-        )
+        encryption_handler = EncryptionHandler()
+        encrypted_data, encrypted_aes_key = encryption_handler.encrypt(msg)
 
         encrypted_data_str = bytes_to_str(encrypted_data)
         encrypted_aes_key_str = bytes_to_str(encrypted_aes_key)
@@ -107,7 +105,12 @@ class Image:
         encrypted_aes_key_str = self.decode_channel(1)
         private_key_str = EncryptionHandler.add_pem_headers(self.decode_channel(2))
 
-        encrypted_data_bytes = str_to_bytes(encrypted_data_str)
-        encrypted_aes_key_bytes = str_to_bytes(encrypted_aes_key_str)
         private_key = EncryptionHandler.str_to_private_key(private_key_str)
-        return EncryptionHandler.decrypt(encrypted_data_bytes, encrypted_aes_key_bytes, private_key)
+        encrypted_aes_key_bytes = str_to_bytes(encrypted_aes_key_str)
+        encrypted_data_bytes = str_to_bytes(encrypted_data_str)
+
+        encryption_handler = EncryptionHandler.from_encrypted(
+            private_key=private_key, encrypted_aes_key=encrypted_aes_key_bytes, msg=encrypted_data_bytes
+        )
+
+        return encryption_handler.decrypt(encrypted_data_bytes)

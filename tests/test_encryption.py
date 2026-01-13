@@ -50,42 +50,35 @@ class TestEncryptionHandler:
 
     def test_private_key_to_str_and_str_to_private_key(self, mock_encryption_handler: EncryptionHandler) -> None:
         """Test conversion between RSAPrivateKey and its string representation."""
-        private_key_str = mock_encryption_handler.private_key_to_str(mock_encryption_handler.private_key)
-        restored_private_key = mock_encryption_handler.str_to_private_key(private_key_str)
+        private_key_str = EncryptionHandler.private_key_to_str(mock_encryption_handler.private_key)
+        restored_private_key = EncryptionHandler.str_to_private_key(private_key_str)
         assert mock_encryption_handler.private_key.private_numbers() == restored_private_key.private_numbers()
 
     def test_strip_and_add_pem_headers(self, mock_encryption_handler: EncryptionHandler) -> None:
         """Test stripping and adding PEM headers to a key string."""
-        private_key_str = mock_encryption_handler.private_key_to_str(mock_encryption_handler.private_key)
-        stripped_key = mock_encryption_handler.strip_pem_headers(private_key_str)
-        restored_key = mock_encryption_handler.add_pem_headers(stripped_key)
+        private_key_str = EncryptionHandler.private_key_to_str(mock_encryption_handler.private_key)
+        stripped_key = EncryptionHandler.strip_pem_headers(private_key_str)
+        restored_key = EncryptionHandler.add_pem_headers(stripped_key)
         assert private_key_str == restored_key
 
     def test_encrypt_and_decrypt_with_aes(self, mock_encryption_handler: EncryptionHandler) -> None:
         """Test AES encryption and decryption."""
-        encrypted_msg = mock_encryption_handler.encrypt_with_aes(
+        encrypted_msg = EncryptionHandler.encrypt_with_aes(
             mock_encryption_handler.aes_key, mock_encryption_handler.iv, MOCK_MSG
         )
-        decrypted_msg = mock_encryption_handler.decrypt_with_aes(
+        decrypted_msg = EncryptionHandler.decrypt_with_aes(
             mock_encryption_handler.aes_key, mock_encryption_handler.iv, encrypted_msg
         )
         assert MOCK_MSG == decrypted_msg.encode("utf-8")
 
     def test_encrypt_and_decrypt_with_rsa(self, mock_encryption_handler: EncryptionHandler) -> None:
         """Test RSA encryption and decryption."""
-        encrypted_msg = mock_encryption_handler.encrypt_with_rsa(mock_encryption_handler.public_key, MOCK_MSG)
-        decrypted_msg = mock_encryption_handler.decrypt_with_rsa(mock_encryption_handler.private_key, encrypted_msg)
+        encrypted_msg = EncryptionHandler.encrypt_with_rsa(mock_encryption_handler.public_key, MOCK_MSG)
+        decrypted_msg = EncryptionHandler.decrypt_with_rsa(mock_encryption_handler.private_key, encrypted_msg)
         assert MOCK_MSG == decrypted_msg
 
     def test_encrypt_and_decrypt(self, mock_encryption_handler: EncryptionHandler) -> None:
         """Test combined encryption and decryption using AES and RSA."""
-        encrypted_data, encrypted_aes_key = mock_encryption_handler.encrypt(
-            mock_encryption_handler.aes_key,
-            mock_encryption_handler.iv,
-            mock_encryption_handler.public_key,
-            MOCK_MSG.decode("utf-8"),
-        )
-        decrypted_msg = mock_encryption_handler.decrypt(
-            encrypted_data, encrypted_aes_key, mock_encryption_handler.private_key
-        )
+        encrypted_data, _ = mock_encryption_handler.encrypt(MOCK_MSG.decode("utf-8"))
+        decrypted_msg = mock_encryption_handler.decrypt(encrypted_data)
         assert MOCK_MSG == decrypted_msg.encode("utf-8")

@@ -7,8 +7,20 @@ from python_template_server.models import BaseResponse, TemplateServerConfig
 
 
 # Steganographer Server Configuration Models
+class SteganographyConfig(BaseModel):
+    """Configuration model for steganography settings."""
+
+    private_key_size: int = Field(default=2048, description="Size of the RSA private key in bits", ge=1024)
+    iv_size: int = Field(default=16, description="Size of the AES initialization vector in bytes", ge=8)
+    aes_key_size: int = Field(default=32, description="Size of the AES key in bytes", ge=16)
+
+
 class SteganographerServerConfig(TemplateServerConfig):
     """Configuration model for the Steganographer Server."""
+
+    steganography: SteganographyConfig = Field(
+        default_factory=SteganographyConfig, description="Steganography-related configuration settings"
+    )
 
 
 # Steganography Models

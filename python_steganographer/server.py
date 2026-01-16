@@ -155,8 +155,7 @@ class SteganographerServer(TemplateServer):
         image = self._get_image_instance_from_algorithm(capacity_request.algorithm)
         image.load_image(image_bytes)
 
-        channel_shape = image.array[:, :, 0].shape
-        capacity_characters = image.algorithm.calculate_capacity(channel_shape)
+        capacity_characters = image.get_capacity()
 
         return PostCapacityResponse(
             code=ResponseCode.OK,

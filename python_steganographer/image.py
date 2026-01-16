@@ -83,12 +83,14 @@ class Image:
         channel_data = self.array[:, :, channel]
         return self.algorithm.extract_data(channel_data)
 
-    def encode(self, msg: str) -> None:
+    def encode(self, msg: str, private_key_size: int, iv_size: int, aes_key_size: int) -> None:
         """Add encrypted message into image array.
 
         :param str msg: Message to insert into the image
         """
-        encryption_handler = EncryptionHandler()
+        encryption_handler = EncryptionHandler(
+            private_key_size=private_key_size, iv_size=iv_size, aes_key_size=aes_key_size
+        )
         encrypted_data, encrypted_aes_key = encryption_handler.encrypt(msg)
 
         encrypted_data_str = bytes_to_str(encrypted_data)
@@ -119,3 +121,11 @@ class Image:
         )
 
         return encryption_handler.decrypt(encrypted_data_bytes)
+
+    def get_capacity(self) -> int:
+        """Calculate the steganography capacity of the image array.
+
+        :return int: Capacity in characters for hiding data in a single channel
+        """
+        channel_shape = self.array[:, :, 0].shape
+        return self.algorithm.calculate_capacity(channel_shape)

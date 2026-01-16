@@ -17,22 +17,29 @@ class EncryptionHandler:
     """Handler class for encryption and decryption operations."""
 
     def __init__(
-        self, private_key: RSAPrivateKey | None = None, iv: bytes | None = None, aes_key: bytes | None = None
+        self,
+        private_key: RSAPrivateKey | None = None,
+        iv: bytes | None = None,
+        aes_key: bytes | None = None,
+        private_key_size: int = DEFAULT_PRIVATE_KEY_SIZE,
+        iv_size: int = DEFAULT_IV_SIZE,
+        aes_key_size: int = DEFAULT_AES_KEY_SIZE,
     ) -> None:
         """Initialize the KeysType with RSA keys and AES key.
 
         :param RSAPrivateKey private_key: RSA private key for decryption
         :param bytes iv: Initialization vector for AES encryption/decryption
         :param bytes aes_key: AES key for encryption/decryption
-        :param int iv_size: Size of the initialization vector (default: 16 bytes)
-        :param int aes_key_size: Size of the AES key (default: 32 bytes)
+        :param int private_key_size: Size of the RSA private key
+        :param int iv_size: Size of the initialization vector
+        :param int aes_key_size: Size of the AES key
         """
         self.private_key = private_key or rsa.generate_private_key(
-            public_exponent=65537, key_size=DEFAULT_PRIVATE_KEY_SIZE, backend=default_backend()
+            public_exponent=65537, key_size=private_key_size, backend=default_backend()
         )
         self.public_key = self.private_key.public_key()
-        self.iv = iv or os.urandom(DEFAULT_IV_SIZE)
-        self.aes_key = aes_key or os.urandom(DEFAULT_AES_KEY_SIZE)
+        self.iv = iv or os.urandom(iv_size)
+        self.aes_key = aes_key or os.urandom(aes_key_size)
 
     @staticmethod
     def private_key_to_str(private_key: RSAPrivateKey) -> str:

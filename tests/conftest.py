@@ -8,16 +8,22 @@ import pytest
 
 from python_steganographer.algorithms import DCTAlgorithm, LSBAlgorithm
 from python_steganographer.image import Image
-from python_steganographer.models import SteganographerServerConfig
+from python_steganographer.models import SteganographerServerConfig, SteganographyConfig
 
 rng = np.random.default_rng(42)
 
 
 # Steganographer Server Configuration Models
 @pytest.fixture
-def mock_steganographer_server_config() -> SteganographerServerConfig:
+def mock_steganography_config() -> SteganographyConfig:
+    """Provide a mock SteganographyConfig instance."""
+    return SteganographyConfig(private_key_size=1024, iv_size=16, aes_key_size=32)
+
+
+@pytest.fixture
+def mock_steganographer_server_config(mock_steganography_config: SteganographyConfig) -> SteganographerServerConfig:
     """Provide a mock SteganographerServerConfig instance."""
-    return SteganographerServerConfig.model_validate({})  # type: ignore[no-any-return]
+    return SteganographerServerConfig(steganography=mock_steganography_config)
 
 
 # Algorithm fixtures
@@ -42,8 +48,8 @@ def mock_image() -> np.ndarray[np.uint8]:
 
 @pytest.fixture
 def mock_big_image() -> np.ndarray[np.uint8]:
-    """Create a sample 900x900x3 image for testing."""
-    return rng.integers(0, 256, size=(900, 900, 3), dtype=np.uint8)
+    """Create a sample 640x640x3 image for testing."""
+    return rng.integers(0, 256, size=(640, 640, 3), dtype=np.uint8)
 
 
 @pytest.fixture

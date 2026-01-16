@@ -156,11 +156,11 @@ class SteganographerServer(TemplateServer):
         image.load_image(image_bytes)
 
         channel_shape = image.array[:, :, 0].shape
-        capacity_bytes = image.algorithm.calculate_capacity(channel_shape)
+        capacity_characters = image.algorithm.calculate_capacity(channel_shape)
 
         return PostCapacityResponse(
             code=ResponseCode.OK,
             message="Capacity calculated successfully",
             timestamp=PostCapacityResponse.current_timestamp(),
-            capacity_bytes=capacity_bytes,
+            capacity_characters=capacity_characters,
         )

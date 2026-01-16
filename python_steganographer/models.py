@@ -35,7 +35,7 @@ class PostDecodeResponse(BaseResponse):
 class PostCapacityResponse(BaseResponse):
     """Response model for checking image capacity for steganography."""
 
-    capacity_bytes: int = Field(..., description="The capacity in bytes for hiding data")
+    capacity_characters: int = Field(..., description="The capacity in characters for hiding data in a single channel")
 
 
 # API Request Models

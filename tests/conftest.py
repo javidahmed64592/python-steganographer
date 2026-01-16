@@ -1,7 +1,6 @@
 """Pytest fixtures for the application's unit tests."""
 
 from collections.abc import Generator
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import numpy as np
@@ -64,7 +63,7 @@ def mock_load_image(mock_big_image: np.ndarray[np.uint8]) -> Generator[MagicMock
 def mock_image_instance_lsb(mock_load_image: MagicMock) -> Image:
     """Create an Image instance with LSB algorithm."""
     mock_image_instance = Image.lsb()
-    mock_image_instance.load_image(filepath=Path("dummy_path"))
+    mock_image_instance.load_image(image_bytes=b"dummy_bytes")
     return mock_image_instance
 
 
@@ -72,5 +71,5 @@ def mock_image_instance_lsb(mock_load_image: MagicMock) -> Image:
 def mock_image_instance_dct(mock_load_image: MagicMock) -> Image:
     """Create an Image instance with DCT algorithm."""
     mock_image_instance = Image.dct(block_size=8, dct_coefficient=3, quantization_factor=10)
-    mock_image_instance.load_image(filepath=Path("dummy_path"))
+    mock_image_instance.load_image(image_bytes=b"dummy_bytes")
     return mock_image_instance

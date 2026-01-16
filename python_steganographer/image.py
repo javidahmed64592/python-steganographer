@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from pathlib import Path
+import io
 
+import imageio.v3 as iio
 import numpy as np
 import skimage
 from numpy.typing import NDArray
@@ -44,19 +45,24 @@ class Image:
             )
         )
 
-    def load_image(self, filepath: Path) -> None:
-        """Load image from file into array.
+    def load_image(self, image_bytes: bytes) -> None:
+        """Load image from bytes into array.
 
-        :param Path filepath: Path to the image file to load
+        :param bytes image_bytes: Image data as bytes
         """
-        self.array = skimage.io.imread(filepath)
+        self.array = skimage.io.imread(io.BytesIO(image_bytes))
 
-    def save_image(self, filepath: Path) -> None:
-        """Save image array to file.
+    def save_image_to_bytes(self, format_str: str) -> bytes:
+        """Save image array to bytes.
 
-        :param Path filepath: Path to save the image file
+        :param str format_str: Image format
+        :return bytes: Image data as bytes
         """
-        skimage.io.imsave(filepath, self.array)
+        file_extension = f".{format_str}" if not format_str.startswith(".") else format_str
+        buffer = io.BytesIO()
+        iio.imwrite(buffer, self.array, extension=file_extension)
+        buffer.seek(0)
+        return buffer.read()
 
     def encode_channel(self, channel: int, msg: str) -> None:
         """Insert message into specific channel.

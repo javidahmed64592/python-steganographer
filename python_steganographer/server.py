@@ -32,6 +32,7 @@ class SteganographerServer(TemplateServer):
 
         :param SteganographerServerConfig | None config: Optional pre-loaded configuration
         """
+        self.config: SteganographerServerConfig
         super().__init__(
             package_name="python_steganographer",
             config=config,
@@ -106,7 +107,12 @@ class SteganographerServer(TemplateServer):
         image.load_image(image_bytes)
 
         logger.info("Encoding message of length %d into image", len(encode_request.message))
-        image.encode(msg=encode_request.message)
+        image.encode(
+            msg=encode_request.message,
+            private_key_size=self.config.steganography.private_key_size,
+            iv_size=self.config.steganography.iv_size,
+            aes_key_size=self.config.steganography.aes_key_size,
+        )
 
         encoded_image_bytes = image.save_image_to_bytes(format_str=encode_request.output_format)
         encoded_image_b64 = base64.b64encode(encoded_image_bytes).decode("utf-8")

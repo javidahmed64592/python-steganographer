@@ -8,7 +8,6 @@ from fastapi import HTTPException, Request
 from python_template_server.models import ResponseCode
 from python_template_server.template_server import TemplateServer
 
-from python_steganographer.constants import DEFAULT_BLOCK_SIZE, DEFAULT_DCT_COEFFICIENT, DEFAULT_QUANTIZATION_FACTOR
 from python_steganographer.image import Image
 from python_steganographer.models import (
     AlgorithmType,
@@ -69,8 +68,7 @@ class SteganographerServer(TemplateServer):
             methods=["POST"],
         )
 
-    @staticmethod
-    def _get_image_instance_from_algorithm(algorithm: AlgorithmType) -> Image:
+    def _get_image_instance_from_algorithm(self, algorithm: AlgorithmType) -> Image:
         """Get an Image instance based on the specified algorithm.
 
         :param AlgorithmType algorithm: The steganography algorithm
@@ -84,9 +82,9 @@ class SteganographerServer(TemplateServer):
             case AlgorithmType.DCT:
                 logger.info("Using DCT algorithm")
                 return Image.dct(
-                    block_size=DEFAULT_BLOCK_SIZE,
-                    dct_coefficient=DEFAULT_DCT_COEFFICIENT,
-                    quantization_factor=DEFAULT_QUANTIZATION_FACTOR,
+                    block_size=self.config.steganography.dct_block_size,
+                    dct_coefficient=self.config.steganography.dct_coefficient,
+                    quantization_factor=self.config.steganography.dct_quantization_factor,
                 )
             case _:
                 logger.error("Unsupported algorithm: %s", algorithm)

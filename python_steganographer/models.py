@@ -5,14 +5,32 @@ from enum import StrEnum, auto
 from pydantic import BaseModel, Field
 from python_template_server.models import BaseResponse, TemplateServerConfig
 
+from python_steganographer.constants import (
+    DEFAULT_AES_KEY_SIZE,
+    DEFAULT_DCT_BLOCK_SIZE,
+    DEFAULT_DCT_COEFFICIENT,
+    DEFAULT_DCT_QUANTIZATION_FACTOR,
+    DEFAULT_IV_SIZE,
+    DEFAULT_PRIVATE_KEY_SIZE,
+)
+
 
 # Steganographer Server Configuration Models
 class SteganographyConfig(BaseModel):
     """Configuration model for steganography settings."""
 
-    private_key_size: int = Field(default=2048, description="Size of the RSA private key in bits", ge=1024)
-    iv_size: int = Field(default=16, description="Size of the AES initialization vector in bytes", ge=8)
-    aes_key_size: int = Field(default=32, description="Size of the AES key in bytes", ge=16)
+    dct_block_size: int = Field(default=DEFAULT_DCT_BLOCK_SIZE, description="DCT block size", ge=4)
+    dct_coefficient: int = Field(
+        default=DEFAULT_DCT_COEFFICIENT, description="DCT coefficient to modify (1-indexed, avoid DC component)", ge=1
+    )
+    dct_quantization_factor: int = Field(
+        default=DEFAULT_DCT_QUANTIZATION_FACTOR, description="Quantization factor for DCT coefficients", ge=1
+    )
+    private_key_size: int = Field(
+        default=DEFAULT_PRIVATE_KEY_SIZE, description="Size of the RSA private key in bits", ge=1024
+    )
+    iv_size: int = Field(default=DEFAULT_IV_SIZE, description="Size of the AES initialization vector in bytes", ge=8)
+    aes_key_size: int = Field(default=DEFAULT_AES_KEY_SIZE, description="Size of the AES key in bytes", ge=16)
 
 
 class SteganographerServerConfig(TemplateServerConfig):

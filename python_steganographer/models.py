@@ -2,7 +2,7 @@
 
 from enum import StrEnum, auto
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from python_template_server.models import BaseResponse, TemplateServerConfig
 
 
@@ -23,40 +23,40 @@ class AlgorithmType(StrEnum):
 class PostEncodeResponse(BaseResponse):
     """Response model for encoding data into an image."""
 
-    image_data: str  # Base64-encoded image bytes
+    image_data: str = Field(..., description="Base64-encoded image bytes")
 
 
 class PostDecodeResponse(BaseResponse):
     """Response model for decoding data from an image."""
 
-    decoded_message: str
+    decoded_message: str = Field(..., description="The decoded message from the image")
 
 
 class PostCapacityResponse(BaseResponse):
     """Response model for checking image capacity for steganography."""
 
-    capacity_bytes: int
+    capacity_bytes: int = Field(..., description="The capacity in bytes for hiding data")
 
 
 # API Request Models
 class PostEncodeRequest(BaseModel):
     """Request model for encoding data into an image."""
 
-    image_data: str  # Base64-encoded image bytes
-    output_format: str  # Output image format
-    message: str
-    algorithm: AlgorithmType
+    image_data: str = Field(..., description="Base64-encoded image bytes")
+    output_format: str = Field(..., description="Output image format")
+    message: str = Field(..., description="The message to encode")
+    algorithm: AlgorithmType = Field(..., description="The steganography algorithm to use")
 
 
 class PostDecodeRequest(BaseModel):
     """Request model for decoding data from an image."""
 
-    image_data: str  # Base64-encoded image bytes
-    algorithm: AlgorithmType
+    image_data: str = Field(..., description="Base64-encoded image bytes")
+    algorithm: AlgorithmType = Field(..., description="The steganography algorithm to use")
 
 
 class PostCapacityRequest(BaseModel):
     """Request model for checking image capacity for steganography."""
 
-    image_data: str  # Base64-encoded image bytes
-    algorithm: AlgorithmType
+    image_data: str = Field(..., description="Base64-encoded image bytes")
+    algorithm: AlgorithmType = Field(..., description="The steganography algorithm to use")

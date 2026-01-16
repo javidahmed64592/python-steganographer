@@ -17,7 +17,7 @@ rng = np.random.default_rng(42)
 @pytest.fixture
 def mock_steganography_config() -> SteganographyConfig:
     """Provide a mock SteganographyConfig instance."""
-    return SteganographyConfig(private_key_size=1024, iv_size=16, aes_key_size=32)
+    return SteganographyConfig(private_key_size=1024)
 
 
 @pytest.fixture
@@ -34,9 +34,13 @@ def lsb_algorithm() -> LSBAlgorithm:
 
 
 @pytest.fixture
-def dct_algorithm() -> DCTAlgorithm:
+def dct_algorithm(mock_steganography_config: SteganographyConfig) -> DCTAlgorithm:
     """Create DCT algorithm instance."""
-    return DCTAlgorithm()
+    return DCTAlgorithm(
+        block_size=mock_steganography_config.dct_block_size,
+        dct_coefficient=mock_steganography_config.dct_coefficient,
+        quantization_factor=mock_steganography_config.dct_quantization_factor,
+    )
 
 
 # Image fixtures

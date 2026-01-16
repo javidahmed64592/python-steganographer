@@ -6,9 +6,6 @@ import numpy as np
 from scipy.fft import dct, idct
 
 from python_steganographer.constants import (
-    DEFAULT_BLOCK_SIZE,
-    DEFAULT_DCT_COEFFICIENT,
-    DEFAULT_QUANTIZATION_FACTOR,
     NUM_BITS,
 )
 from python_steganographer.helpers import bytes_list_to_msg, msg_to_bytes_list
@@ -166,9 +163,9 @@ class DCTAlgorithm(AlgorithmBase):
 
     def __init__(
         self,
-        block_size: int = DEFAULT_BLOCK_SIZE,
-        dct_coefficient: int = DEFAULT_DCT_COEFFICIENT,
-        quantization_factor: int = DEFAULT_QUANTIZATION_FACTOR,
+        block_size: int,
+        dct_coefficient: int,
+        quantization_factor: int,
     ) -> None:
         """Initialize DCT algorithm.
 

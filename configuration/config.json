@@ -23,5 +23,10 @@
     "allow_nan": false,
     "indent": null,
     "media_type": "application/json; charset=utf-8"
+  },
+  "steganography": {
+    "private_key_size": 2048,
+    "iv_size": 16,
+    "aes_key_size": 32
   }
 }

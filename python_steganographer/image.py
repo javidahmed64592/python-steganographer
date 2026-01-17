@@ -103,9 +103,10 @@ class Image:
         self.encode_channel(1, encrypted_aes_key_str)
         self.encode_channel(2, private_key_str)
 
-    def decode(self) -> str:
+    def decode(self, iv_size: int) -> str:
         """Extract encrypted message from image array.
 
+        :param int iv_size: Size of the AES initialization vector in bytes
         :return str: Extracted message after decryption
         """
         encrypted_data_str = self.decode_channel(0)
@@ -117,7 +118,10 @@ class Image:
         encrypted_data_bytes = str_to_bytes(encrypted_data_str)
 
         encryption_handler = EncryptionHandler.from_encrypted(
-            private_key=private_key, encrypted_aes_key=encrypted_aes_key_bytes, msg=encrypted_data_bytes
+            private_key=private_key,
+            encrypted_aes_key=encrypted_aes_key_bytes,
+            iv_size=iv_size,
+            msg=encrypted_data_bytes,
         )
 
         return encryption_handler.decrypt(encrypted_data_bytes)

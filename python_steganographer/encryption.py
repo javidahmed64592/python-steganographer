@@ -10,20 +10,18 @@ from cryptography.hazmat.primitives.asymmetric import padding, rsa
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey, RSAPublicKey
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
-from python_steganographer.constants import DEFAULT_AES_KEY_SIZE, DEFAULT_IV_SIZE, DEFAULT_PRIVATE_KEY_SIZE
-
 
 class EncryptionHandler:
     """Handler class for encryption and decryption operations."""
 
     def __init__(
         self,
+        private_key_size: int | None = None,
+        iv_size: int | None = None,
+        aes_key_size: int | None = None,
         private_key: RSAPrivateKey | None = None,
         iv: bytes | None = None,
         aes_key: bytes | None = None,
-        private_key_size: int = DEFAULT_PRIVATE_KEY_SIZE,
-        iv_size: int = DEFAULT_IV_SIZE,
-        aes_key_size: int = DEFAULT_AES_KEY_SIZE,
     ) -> None:
         """Initialize the KeysType with RSA keys and AES key.
 
@@ -34,6 +32,10 @@ class EncryptionHandler:
         :param int iv_size: Size of the initialization vector
         :param int aes_key_size: Size of the AES key
         """
+        if not (private_key or private_key_size) or not (iv or iv_size) or not (aes_key or aes_key_size):
+            msg = "Either provide the keys or their sizes to generate new keys."
+            raise ValueError(msg)
+
         self.private_key = private_key or rsa.generate_private_key(
             public_exponent=65537, key_size=private_key_size, backend=default_backend()
         )
@@ -150,15 +152,18 @@ class EncryptionHandler:
         return encrypted_data, encrypted_aes_key
 
     @classmethod
-    def from_encrypted(cls, private_key: RSAPrivateKey, encrypted_aes_key: bytes, msg: bytes) -> EncryptionHandler:
+    def from_encrypted(
+        cls, private_key: RSAPrivateKey, encrypted_aes_key: bytes, iv_size: int, msg: bytes
+    ) -> EncryptionHandler:
         """Create an EncryptionHandler instance from encrypted data.
 
         :param RSAPrivateKey private_key: RSA private key for decrypting the AES key
         :param bytes encrypted_aes_key: Encrypted AES key for decryption
+        :param int iv_size: Size of the AES initialization vector in bytes
         :param bytes msg: Encrypted message containing the IV and encrypted data
         :return EncryptionHandler: Instance of EncryptionHandler with decrypted AES key and IV
         """
-        extracted_iv = msg[:DEFAULT_IV_SIZE]
+        extracted_iv = msg[:iv_size]
         decrypted_aes_key = cls.decrypt_with_rsa(private_key, encrypted_aes_key)
         return cls(private_key=private_key, iv=extracted_iv, aes_key=decrypted_aes_key)
 

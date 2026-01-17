@@ -30,7 +30,7 @@ class TestImage:
                 iv_size=mock_steganographer_server_config.steganography.iv_size,
                 aes_key_size=mock_steganographer_server_config.steganography.aes_key_size,
             )
-            assert image_instance.decode() == MOCK_MSG
+            assert image_instance.decode(iv_size=mock_steganographer_server_config.steganography.iv_size) == MOCK_MSG
 
     def test_get_capacity(self, mock_image_instance_lsb: Image, mock_image_instance_dct: Image) -> None:
         """Test calculating the steganography capacity of an image."""

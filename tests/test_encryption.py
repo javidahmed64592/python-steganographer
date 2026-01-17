@@ -9,6 +9,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 
 from python_steganographer.encryption import EncryptionHandler
+from python_steganographer.models import SteganographerServerConfig
 
 MOCK_MSG = b"Test message for encryption"
 mock_private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
@@ -33,9 +34,17 @@ def mock_os_urandom() -> Generator[MagicMock]:
 
 
 @pytest.fixture
-def mock_encryption_handler(mock_os_urandom: MagicMock, mock_generate_private_key: MagicMock) -> EncryptionHandler:
+def mock_encryption_handler(
+    mock_os_urandom: MagicMock,
+    mock_generate_private_key: MagicMock,
+    mock_steganographer_server_config: SteganographerServerConfig,
+) -> EncryptionHandler:
     """Fixture to provide an EncryptionHandler instance with mocked keys."""
-    return EncryptionHandler()
+    return EncryptionHandler(
+        private_key_size=mock_steganographer_server_config.steganography.private_key_size,
+        iv_size=mock_steganographer_server_config.steganography.iv_size,
+        aes_key_size=mock_steganographer_server_config.steganography.aes_key_size,
+    )
 
 
 class TestEncryptionHandler:

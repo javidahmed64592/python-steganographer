@@ -136,7 +136,7 @@ class SteganographerServer(TemplateServer):
         image = self._get_image_instance_from_algorithm(decode_request.algorithm)
         image.load_image(image_bytes)
 
-        decoded_message = image.decode()
+        decoded_message = image.decode(iv_size=self.config.steganography.iv_size)
 
         return PostDecodeResponse(
             code=ResponseCode.OK,

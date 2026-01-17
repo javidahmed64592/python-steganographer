@@ -34,12 +34,12 @@ def lsb_algorithm() -> LSBAlgorithm:
 
 
 @pytest.fixture
-def dct_algorithm(mock_steganography_config: SteganographyConfig) -> DCTAlgorithm:
+def dct_algorithm(mock_steganographer_server_config: SteganographerServerConfig) -> DCTAlgorithm:
     """Create DCT algorithm instance."""
     return DCTAlgorithm(
-        block_size=mock_steganography_config.dct_block_size,
-        dct_coefficient=mock_steganography_config.dct_coefficient,
-        quantization_factor=mock_steganography_config.dct_quantization_factor,
+        block_size=mock_steganographer_server_config.steganography.dct_block_size,
+        dct_coefficient=mock_steganographer_server_config.steganography.dct_coefficient,
+        quantization_factor=mock_steganographer_server_config.steganography.dct_quantization_factor,
     )
 
 

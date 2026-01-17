@@ -10,10 +10,14 @@
 <!-- omit from toc -->
 # Python Steganographer
 
-A production-ready FastAPI steganography server which uses [python-template-server](https://github.com/javidahmed64592/python-template-server).
+A production-ready FastAPI steganography server with hybrid encryption (RSA-2048 + AES-256) built on [python-template-server](https://github.com/javidahmed64592/python-template-server).
+Hide encrypted messages in images using LSB or DCT algorithms with comprehensive API security.
 
 <!-- omit from toc -->
 ## Table of Contents
+- [Features](#features)
+  - [Steganography Capabilities](#steganography-capabilities)
+  - [Security Features](#security-features)
 - [Quick Start](#quick-start)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
@@ -21,6 +25,33 @@ A production-ready FastAPI steganography server which uses [python-template-serv
   - [Run the Server](#run-the-server)
 - [Documentation](#documentation)
 - [License](#license)
+
+## Features
+
+### Steganography Capabilities
+
+**Dual Algorithm Support**:
+- **LSB (Least Significant Bit)**: High capacity, fast encoding/decoding, ideal for lossless formats (PNG)
+- **DCT (Discrete Cosine Transform)**: JPEG-compression resistant, robust to image transformations
+
+**Operations**:
+- **Encode**: Hide encrypted messages in images with base64 input/output
+- **Decode**: Extract and decrypt hidden messages from images
+- **Capacity Check**: Calculate maximum message size for any image
+
+**Flexible Image Handling**:
+- Supports multiple formats
+- Base64 encoding for API transmission
+- Configurable output formats
+- Maintains image dimensions and quality
+
+### Security Features
+
+**Hybrid Encryption Architecture**:
+- **RSA-2048**: Asymmetric encryption for secure key exchange
+- **AES-256-CFB**: Symmetric encryption for message data
+- **Random IV**: Unique initialization vector for each operation
+- **Multi-Channel Embedding**: Data distributed across RGB channels
 
 ## Quick Start
 
@@ -58,6 +89,18 @@ uv run python-steganographer
 # Redoc: https://localhost:443/api/redoc
 # Health check: curl -k https://localhost:443/api/health
 # Login (requires authentication): curl -k -H "X-API-Key: your-token-here" https://localhost:443/api/login
+
+# Example: Encode a message
+curl -k -H "X-API-Key: your-token-here" \
+  -H "Content-Type: application/json" \
+  -d '{"image_data":"base64_image","output_format":"png","message":"Secret","algorithm":"lsb"}' \
+  https://localhost:443/api/image/encode
+
+# Example: Decode a message
+curl -k -H "X-API-Key: your-token-here" \
+  -H "Content-Type: application/json" \
+  -d '{"image_data":"base64_encoded_image","algorithm":"lsb"}' \
+  https://localhost:443/api/image/decode
 ```
 
 ## Documentation

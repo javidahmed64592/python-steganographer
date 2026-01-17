@@ -23,10 +23,22 @@ This document outlines how to configure and setup a development environment to w
 
 ```
 python_steganographer/
-├── main.py           # Application entry point
-├── models.py         # Pydantic models (config + API responses)
-└── server.py         # Cloud server class
+├── algorithms.py         # Steganography algorithms (LSB, DCT)
+├── constants.py          # Application constants (key sizes, DCT defaults)
+├── encryption.py         # Encryption/decryption handlers (RSA + AES)
+├── helpers.py            # Utility functions (byte/string conversions)
+├── image.py              # Image class for steganography operations
+├── main.py               # Application entry point
+├── models.py             # Pydantic models (config + API request/response)
+└── server.py             # SteganographerServer class (extends TemplateServer)
 ```
+
+**Key Modules**:
+- **server.py**: Extends `TemplateServer` from python-template-server, implements three steganography endpoints
+- **algorithms.py**: Base class `AlgorithmBase` with implementations `LSBAlgorithm` and `DCTAlgorithm`
+- **encryption.py**: `EncryptionHandler` class for hybrid RSA-2048 + AES-256 encryption
+- **image.py**: `Image` class with factory methods `lsb()` and `dct()`, handles encoding/decoding operations
+- **models.py**: Pydantic models for configuration (`SteganographerServerConfig`) and API contracts
 
 ### Installing Dependencies
 
@@ -85,6 +97,9 @@ The backend will be available at `https://localhost:443/api` by default.
 **Available Endpoints:**
 - Health Check: `https://localhost:443/api/health`
 - Login: `https://localhost:443/api/login` (requires authentication)
+- Encode Image: `https://localhost:443/api/image/encode` (requires authentication)
+- Decode Image: `https://localhost:443/api/image/decode` (requires authentication)
+- Check Capacity: `https://localhost:443/api/image/capacity` (requires authentication)
 
 **Testing the API:**
 ```sh
@@ -93,7 +108,15 @@ curl -k https://localhost:443/api/health
 
 # Login endpoint (requires authentication)
 curl -k -H "X-API-Key: your-token-here" https://localhost:443/api/login
+
+# Encode a message into an image
+curl -k -H "X-API-Key: your-token-here" \
+  -H "Content-Type: application/json" \
+  -d '{"image_data":"base64_encoded_image","output_format":"png","message":"Secret","algorithm":"lsb"}' \
+  https://localhost:443/api/image/encode
 ```
+
+See the [API Documentation](./API.md) for detailed endpoint specifications.
 
 ### Testing, Linting, and Type Checking
 

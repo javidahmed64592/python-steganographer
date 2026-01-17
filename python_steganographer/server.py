@@ -77,10 +77,8 @@ class SteganographerServer(TemplateServer):
         """
         match algorithm:
             case AlgorithmType.LSB:
-                logger.info("Using LSB algorithm")
                 return Image.lsb()
             case AlgorithmType.DCT:
-                logger.info("Using DCT algorithm")
                 return Image.dct(
                     block_size=self.config.steganography.dct_block_size,
                     dct_coefficient=self.config.steganography.dct_coefficient,
@@ -96,31 +94,37 @@ class SteganographerServer(TemplateServer):
         :param Request request: The request object
         :return PostEncodeResponse: Server response with encoded image data
         """
-        encode_request = PostEncodeRequest.model_validate(await request.json())
-        logger.info("Image file type: %s", encode_request.output_format)
+        try:
+            encode_request = PostEncodeRequest.model_validate(await request.json())
 
-        image_bytes = base64.b64decode(encode_request.image_data)
+            image_bytes = base64.b64decode(encode_request.image_data)
+            image = self._get_image_instance_from_algorithm(encode_request.algorithm)
+            image.load_image(image_bytes)
 
-        image = self._get_image_instance_from_algorithm(encode_request.algorithm)
-        image.load_image(image_bytes)
+            image.encode(
+                msg=encode_request.message,
+                private_key_size=self.config.steganography.private_key_size,
+                iv_size=self.config.steganography.iv_size,
+                aes_key_size=self.config.steganography.aes_key_size,
+            )
 
-        logger.info("Encoding message of length %d into image", len(encode_request.message))
-        image.encode(
-            msg=encode_request.message,
-            private_key_size=self.config.steganography.private_key_size,
-            iv_size=self.config.steganography.iv_size,
-            aes_key_size=self.config.steganography.aes_key_size,
-        )
+            encoded_image_bytes = image.save_image_to_bytes(format_str=encode_request.output_format)
+            encoded_image_b64 = base64.b64encode(encoded_image_bytes).decode("utf-8")
 
-        encoded_image_bytes = image.save_image_to_bytes(format_str=encode_request.output_format)
-        encoded_image_b64 = base64.b64encode(encoded_image_bytes).decode("utf-8")
-
-        return PostEncodeResponse(
-            code=ResponseCode.OK,
-            message="Image encoded successfully",
-            timestamp=PostEncodeResponse.current_timestamp(),
-            image_data=encoded_image_b64,
-        )
+            return PostEncodeResponse(
+                code=ResponseCode.OK,
+                message="Image encoded successfully",
+                timestamp=PostEncodeResponse.current_timestamp(),
+                image_data=encoded_image_b64,
+            )
+        except Exception:
+            logger.exception("Failed to encode image")
+            return PostEncodeResponse(
+                code=ResponseCode.INTERNAL_SERVER_ERROR,
+                message="Failed to encode image",
+                timestamp=PostEncodeResponse.current_timestamp(),
+                image_data="",
+            )
 
     async def post_decode(self, request: Request) -> PostDecodeResponse:
         """Handle image decode requests - extract a message from an image.
@@ -128,22 +132,29 @@ class SteganographerServer(TemplateServer):
         :param Request request: The request object
         :return PostDecodeResponse: Server response with decoded message
         """
-        decode_request = PostDecodeRequest.model_validate(await request.json())
+        try:
+            decode_request = PostDecodeRequest.model_validate(await request.json())
 
-        image_bytes = base64.b64decode(decode_request.image_data)
+            image_bytes = base64.b64decode(decode_request.image_data)
+            image = self._get_image_instance_from_algorithm(decode_request.algorithm)
+            image.load_image(image_bytes)
 
-        image = self._get_image_instance_from_algorithm(decode_request.algorithm)
-        image.load_image(image_bytes)
+            decoded_message = image.decode(iv_size=self.config.steganography.iv_size)
 
-        decoded_message = image.decode(iv_size=self.config.steganography.iv_size)
-        logger.info("Decoded message of length %d from image", len(decoded_message))
-
-        return PostDecodeResponse(
-            code=ResponseCode.OK,
-            message="Image decoded successfully",
-            timestamp=PostDecodeResponse.current_timestamp(),
-            decoded_message=decoded_message,
-        )
+            return PostDecodeResponse(
+                code=ResponseCode.OK,
+                message="Image decoded successfully",
+                timestamp=PostDecodeResponse.current_timestamp(),
+                decoded_message=decoded_message,
+            )
+        except Exception:
+            logger.exception("Failed to decode image")
+            return PostDecodeResponse(
+                code=ResponseCode.INTERNAL_SERVER_ERROR,
+                message="Failed to decode image",
+                timestamp=PostDecodeResponse.current_timestamp(),
+                decoded_message="",
+            )
 
     async def post_capacity(self, request: Request) -> PostCapacityResponse:
         """Handle capacity check requests - calculate steganography capacity of an image.
@@ -151,18 +162,26 @@ class SteganographerServer(TemplateServer):
         :param Request request: The request object
         :return PostCapacityResponse: Server response with capacity information
         """
-        capacity_request = PostCapacityRequest.model_validate(await request.json())
+        try:
+            capacity_request = PostCapacityRequest.model_validate(await request.json())
 
-        image_bytes = base64.b64decode(capacity_request.image_data)
+            image_bytes = base64.b64decode(capacity_request.image_data)
+            image = self._get_image_instance_from_algorithm(capacity_request.algorithm)
+            image.load_image(image_bytes)
 
-        image = self._get_image_instance_from_algorithm(capacity_request.algorithm)
-        image.load_image(image_bytes)
+            capacity_characters = image.get_capacity()
 
-        capacity_characters = image.get_capacity()
-
-        return PostCapacityResponse(
-            code=ResponseCode.OK,
-            message="Capacity calculated successfully",
-            timestamp=PostCapacityResponse.current_timestamp(),
-            capacity_characters=capacity_characters,
-        )
+            return PostCapacityResponse(
+                code=ResponseCode.OK,
+                message="Capacity calculated successfully",
+                timestamp=PostCapacityResponse.current_timestamp(),
+                capacity_characters=capacity_characters,
+            )
+        except Exception:
+            logger.exception("Failed to calculate capacity")
+            return PostCapacityResponse(
+                code=ResponseCode.INTERNAL_SERVER_ERROR,
+                message="Failed to calculate capacity",
+                timestamp=PostCapacityResponse.current_timestamp(),
+                capacity_characters=0,
+            )

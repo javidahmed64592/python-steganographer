@@ -4,7 +4,7 @@ import base64
 import logging
 from typing import Any
 
-from fastapi import HTTPException, Request
+from fastapi import Request
 from python_template_server.models import ResponseCode
 from python_template_server.template_server import TemplateServer
 
@@ -84,9 +84,6 @@ class SteganographerServer(TemplateServer):
                     dct_coefficient=self.config.steganography.dct_coefficient,
                     quantization_factor=self.config.steganography.dct_quantization_factor,
                 )
-            case _:
-                logger.error("Unsupported algorithm: %s", algorithm)
-                raise HTTPException(status_code=ResponseCode.BAD_REQUEST, detail="Unsupported algorithm")
 
     async def post_encode(self, request: Request) -> PostEncodeResponse:
         """Handle image encode requests - encode a message into an image.

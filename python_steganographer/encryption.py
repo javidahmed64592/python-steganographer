@@ -37,11 +37,13 @@ class EncryptionHandler:
             raise ValueError(msg)
 
         self.private_key = private_key or rsa.generate_private_key(
-            public_exponent=65537, key_size=private_key_size, backend=default_backend()
+            public_exponent=65537,
+            key_size=private_key_size,  # type: ignore[arg-type]
+            backend=default_backend(),
         )
         self.public_key = self.private_key.public_key()
-        self.iv = iv or os.urandom(iv_size)
-        self.aes_key = aes_key or os.urandom(aes_key_size)
+        self.iv = iv or os.urandom(iv_size)  # type: ignore[arg-type]
+        self.aes_key = aes_key or os.urandom(aes_key_size)  # type: ignore[arg-type]
 
     @staticmethod
     def private_key_to_str(private_key: RSAPrivateKey) -> str:
@@ -65,7 +67,11 @@ class EncryptionHandler:
         :return RSAPrivateKey: RSAPrivateKey object
         """
         pem = private_key_str.encode("utf-8")
-        return serialization.load_pem_private_key(pem, password=None, backend=default_backend())
+        key = serialization.load_pem_private_key(pem, password=None, backend=default_backend())
+        if not isinstance(key, RSAPrivateKey):
+            msg = "Loaded key is not an RSA private key"
+            raise TypeError(msg)
+        return key
 
     @staticmethod
     def strip_pem_headers(private_key_str: str) -> str:

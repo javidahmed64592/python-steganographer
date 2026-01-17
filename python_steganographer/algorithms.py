@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
+from numpy.typing import NDArray
 from scipy.fft import dct, idct
 
 from python_steganographer.constants import (
@@ -15,12 +16,12 @@ class AlgorithmBase(ABC):
     """Abstract base class for steganography algorithms."""
 
     @abstractmethod
-    def embed_data(self, channel: np.ndarray[np.uint8], data: str) -> np.ndarray[np.uint8]:
+    def embed_data(self, channel: NDArray[np.uint8], data: str) -> NDArray[np.uint8]:
         """Embed data into image channel.
 
-        :param np.ndarray[np.uint8] channel: Image channel to embed data into
+        :param NDArray[np.uint8] channel: Image channel to embed data into
         :param str data: Data to embed
-        :return np.ndarray[np.uint8]: Modified channel with embedded data
+        :return NDArray[np.uint8]: Modified channel with embedded data
         """
         # Check capacity
         max_capacity = self.calculate_capacity(channel.shape)
@@ -30,11 +31,13 @@ class AlgorithmBase(ABC):
             )
             raise ValueError(msg)
 
+        return channel
+
     @abstractmethod
-    def extract_data(self, channel: np.ndarray[np.uint8]) -> str:
+    def extract_data(self, channel: NDArray[np.uint8]) -> str:
         """Extract data from image channel.
 
-        :param np.ndarray[np.uint8] channel: Image channel to extract data from
+        :param NDArray[np.uint8] channel: Image channel to extract data from
         :return str: Extracted data
         """
         pass
@@ -57,12 +60,12 @@ class LSBAlgorithm(AlgorithmBase):
     statistical analysis.
     """
 
-    def embed_data(self, channel: np.ndarray[np.uint8], data: str) -> np.ndarray[np.uint8]:
+    def embed_data(self, channel: NDArray[np.uint8], data: str) -> NDArray[np.uint8]:
         """Embed data into image channel using LSB steganography.
 
-        :param np.ndarray[np.uint8] channel: Image channel to embed data into
+        :param NDArray[np.uint8] channel: Image channel to embed data into
         :param str data: Data to embed
-        :return np.ndarray[np.uint8]: Modified channel with embedded data
+        :return NDArray[np.uint8]: Modified channel with embedded data
         """
         super().embed_data(channel, data)
 
@@ -76,10 +79,10 @@ class LSBAlgorithm(AlgorithmBase):
         # Reshape back to original dimensions
         return modified_flattened.reshape(original_shape)
 
-    def extract_data(self, channel: np.ndarray[np.uint8]) -> str:
+    def extract_data(self, channel: NDArray[np.uint8]) -> str:
         """Extract data from image channel using LSB steganography.
 
-        :param np.ndarray[np.uint8] channel: Image channel to extract data from
+        :param NDArray[np.uint8] channel: Image channel to extract data from
         :return str: Extracted data
         """
         # Flatten the channel for processing
@@ -98,27 +101,29 @@ class LSBAlgorithm(AlgorithmBase):
         return int(total_pixels // NUM_BITS)
 
     @staticmethod
-    def even_img(img: np.ndarray[np.uint8]) -> np.ndarray[np.uint8]:
+    def even_img(img: NDArray[np.uint8]) -> NDArray[np.uint8]:
         """Round down all values in image array to be even numbers.
 
         This is LSB-specific: we need even values so that adding 1 (for bit '1')
         or 0 (for bit '0') will set the LSB correctly.
 
-        :param np.ndarray[np.uint8] img: Array of pixel values
-        :return np.ndarray[np.uint8]: Array of even pixel values with same shape as `img`
+        :param NDArray[np.uint8] img: Array of pixel values
+        :return NDArray[np.uint8]: Array of even pixel values with same shape as `img`
         """
-        return np.array(img - (img % 2), dtype=img.dtype)
+        # Cast to int to perform operations, then back to uint8
+        img_int = img.astype(np.int32)
+        return np.array(img_int - (img_int % 2), dtype=np.uint8)
 
     @staticmethod
-    def insert_msg(flattened_img: np.ndarray[np.uint8], msg: str) -> np.ndarray[np.uint8]:
+    def insert_msg(flattened_img: NDArray[np.uint8], msg: str) -> NDArray[np.uint8]:
         """Insert a message into image using LSB steganography.
 
         This function modifies the least significant bit of each pixel to store
         message bits. The image must be flattened first.
 
-        :param np.ndarray[np.uint8] flattened_img: Flattened image array
+        :param NDArray[np.uint8] flattened_img: Flattened image array
         :param str msg: Message to insert into image
-        :return np.ndarray[np.uint8]: Flattened image array with message embedded in LSB
+        :return NDArray[np.uint8]: Flattened image array with message embedded in LSB
         """
         # Make all pixel values even (LSB = 0)
         flattened_img = LSBAlgorithm.even_img(flattened_img)
@@ -137,17 +142,18 @@ class LSBAlgorithm(AlgorithmBase):
         return flattened_img
 
     @staticmethod
-    def extract_msg(flattened_img: np.ndarray[np.uint8]) -> str:
+    def extract_msg(flattened_img: NDArray[np.uint8]) -> str:
         """Extract a message from an image using LSB steganography.
 
         This function reads the least significant bit of each pixel to reconstruct
         the hidden message.
 
-        :param np.ndarray[np.uint8] flattened_img: Flattened image array with embedded message
+        :param NDArray[np.uint8] flattened_img: Flattened image array with embedded message
         :return str: Extracted message from image LSBs
         """
         # Extract LSBs (remainder when divided by 2)
-        msg_bytes = (flattened_img % 2).tolist()
+        msg_bytes_array: NDArray[np.uint8] = flattened_img % 2
+        msg_bytes = msg_bytes_array.tolist()
 
         # Convert bits back to message
         return bytes_list_to_msg(msg_bytes)
@@ -189,12 +195,12 @@ class DCTAlgorithm(AlgorithmBase):
         self.dct_coefficient = dct_coefficient
         self.quantization_factor = quantization_factor
 
-    def embed_data(self, channel: np.ndarray[np.uint8], data: str) -> np.ndarray[np.uint8]:
+    def embed_data(self, channel: NDArray[np.uint8], data: str) -> NDArray[np.uint8]:
         """Embed data into image channel using DCT steganography.
 
-        :param np.ndarray[np.uint8] channel: Image channel to embed data into
+        :param NDArray[np.uint8] channel: Image channel to embed data into
         :param str data: Data to embed
-        :return np.ndarray[np.uint8]: Modified channel with embedded data
+        :return NDArray[np.uint8]: Modified channel with embedded data
         """
         super().embed_data(channel, data)
 
@@ -229,10 +235,10 @@ class DCTAlgorithm(AlgorithmBase):
         # Reconstruct the image
         return DCTAlgorithm.reconstruct_from_blocks(modified_blocks, channel.shape, self.block_size)
 
-    def extract_data(self, channel: np.ndarray[np.uint8]) -> str:
+    def extract_data(self, channel: NDArray[np.uint8]) -> str:
         """Extract data from image channel using DCT steganography.
 
-        :param np.ndarray[np.uint8] channel: Image channel to extract data from
+        :param NDArray[np.uint8] channel: Image channel to extract data from
         :return str: Extracted data
         """
         # Split image into blocks
@@ -309,32 +315,33 @@ class DCTAlgorithm(AlgorithmBase):
         return (row, col)
 
     @staticmethod
-    def apply_dct_2d(block: np.ndarray[np.float64]) -> np.ndarray[np.float64]:
+    def apply_dct_2d(block: NDArray[np.float64]) -> NDArray[np.float64]:
         """Apply 2D DCT to an image block.
 
-        :param np.ndarray[np.float64] block: 8x8 image block to transform
-        :return np.ndarray[np.float64]: DCT coefficients
+        :param NDArray[np.float64] block: 8x8 image block to transform
+        :return NDArray[np.float64]: DCT coefficients
         """
         return dct(dct(block.T, norm="ortho").T, norm="ortho")  # type: ignore[no-any-return]
 
     @staticmethod
-    def apply_idct_2d(dct_block: np.ndarray[np.float64]) -> np.ndarray[np.float64]:
+    def apply_idct_2d(dct_block: NDArray[np.float64]) -> NDArray[np.float64]:
         """Apply 2D inverse DCT to DCT coefficients.
 
-        :param np.ndarray[np.float64] dct_block: DCT coefficients to transform back
-        :return np.ndarray[np.float64]: Reconstructed image block
+        :param NDArray[np.float64] dct_block: DCT coefficients to transform back
+        :return NDArray[np.float64]: Reconstructed image block
         """
         return idct(idct(dct_block.T, norm="ortho").T, norm="ortho")  # type: ignore[no-any-return]
 
     @staticmethod
-    def split_into_blocks(channel: np.ndarray[np.uint8], block_size: int) -> list[np.ndarray[np.float64]]:
+    def split_into_blocks(channel: NDArray[np.uint8], block_size: int) -> list[NDArray[np.float64]]:
         """Split image channel into blocks for DCT processing.
 
-        :param np.ndarray[np.uint8] channel: Image channel to split
+        :param NDArray[np.uint8] channel: Image channel to split
         :param int block_size: Size of blocks (typically 8x8)
-        :return list[np.ndarray[np.float64]]: List of image blocks as float arrays
+        :return list[NDArray[np.float64]]: List of image blocks as float arrays
         """
-        h, w = channel.shape
+        h = channel.shape[0]
+        w = channel.shape[1]
         blocks = []
 
         # Process image in block_size x block_size blocks
@@ -347,14 +354,14 @@ class DCTAlgorithm(AlgorithmBase):
 
     @staticmethod
     def reconstruct_from_blocks(
-        blocks: list[np.ndarray[np.float64]], original_shape: tuple[int, int], block_size: int
-    ) -> np.ndarray[np.uint8]:
+        blocks: list[NDArray[np.float64]], original_shape: tuple[int, int], block_size: int
+    ) -> NDArray[np.uint8]:
         """Reconstruct image channel from processed blocks.
 
-        :param list[np.ndarray[np.float64]] blocks: List of processed image blocks
+        :param list[NDArray[np.float64]] blocks: List of processed image blocks
         :param tuple[int, int] original_shape: Original shape of the image channel
         :param int block_size: Size of blocks used
-        :return np.ndarray[np.uint8]: Reconstructed image channel
+        :return NDArray[np.uint8]: Reconstructed image channel
         """
         h, w = original_shape
         reconstructed = np.zeros((h, w), dtype=np.float64)

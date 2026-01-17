@@ -166,5 +166,6 @@ pretty = true
 module = [
     "pyhere.*",
     "python_template_server.*",
+    "scipy.*",
 ]
 ignore_missing_imports = true

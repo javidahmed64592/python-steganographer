@@ -97,7 +97,7 @@ class SteganographerServer(TemplateServer):
         :return PostEncodeResponse: Server response with encoded image data
         """
         encode_request = PostEncodeRequest.model_validate(await request.json())
-        logger.info("Received encode request for '%s' file type", encode_request.output_format)
+        logger.info("Image file type: %s", encode_request.output_format)
 
         image_bytes = base64.b64decode(encode_request.image_data)
 
@@ -128,7 +128,6 @@ class SteganographerServer(TemplateServer):
         :param Request request: The request object
         :return PostDecodeResponse: Server response with decoded message
         """
-        logger.info("Received decode request")
         decode_request = PostDecodeRequest.model_validate(await request.json())
 
         image_bytes = base64.b64decode(decode_request.image_data)
@@ -152,7 +151,6 @@ class SteganographerServer(TemplateServer):
         :param Request request: The request object
         :return PostCapacityResponse: Server response with capacity information
         """
-        logger.info("Received capacity check request")
         capacity_request = PostCapacityRequest.model_validate(await request.json())
 
         image_bytes = base64.b64decode(capacity_request.image_data)

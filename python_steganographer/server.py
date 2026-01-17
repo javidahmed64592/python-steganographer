@@ -137,6 +137,7 @@ class SteganographerServer(TemplateServer):
         image.load_image(image_bytes)
 
         decoded_message = image.decode(iv_size=self.config.steganography.iv_size)
+        logger.info("Decoded message of length %d from image", len(decoded_message))
 
         return PostDecodeResponse(
             code=ResponseCode.OK,

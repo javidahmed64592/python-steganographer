@@ -1,5 +1,6 @@
 """Pytest fixtures for the application's unit tests."""
 
+import base64
 from collections.abc import Generator
 from unittest.mock import MagicMock, patch
 
@@ -8,12 +9,19 @@ import pytest
 
 from python_steganographer.algorithms import DCTAlgorithm, LSBAlgorithm
 from python_steganographer.image import Image
-from python_steganographer.models import SteganographerServerConfig, SteganographyConfig
+from python_steganographer.models import (
+    AlgorithmType,
+    PostCapacityRequest,
+    PostDecodeRequest,
+    PostEncodeRequest,
+    SteganographerServerConfig,
+    SteganographyConfig,
+)
 
 rng = np.random.default_rng(42)
 
 
-# Steganographer Server Configuration Models
+# Steganographer Server Configuration fixtures
 @pytest.fixture
 def mock_steganography_config() -> SteganographyConfig:
     """Provide a mock SteganographyConfig instance."""
@@ -24,6 +32,39 @@ def mock_steganography_config() -> SteganographyConfig:
 def mock_steganographer_server_config(mock_steganography_config: SteganographyConfig) -> SteganographerServerConfig:
     """Provide a mock SteganographerServerConfig instance."""
     return SteganographerServerConfig(steganography=mock_steganography_config)
+
+
+# API Request fixtures
+@pytest.fixture
+def mock_post_encode_request(mock_big_image_bytes: bytes) -> PostEncodeRequest:
+    """Provide a mock PostEncodeRequest instance."""
+    image_data = base64.b64encode(mock_big_image_bytes).decode("utf-8")
+    return PostEncodeRequest(
+        image_data=image_data,
+        output_format="png",
+        message="Test message",
+        algorithm=AlgorithmType.LSB,
+    )
+
+
+@pytest.fixture
+def mock_post_decode_request(mock_big_image_bytes: bytes) -> PostDecodeRequest:
+    """Provide a mock PostDecodeRequest instance."""
+    image_data = base64.b64encode(mock_big_image_bytes).decode("utf-8")
+    return PostDecodeRequest(
+        image_data=image_data,
+        algorithm=AlgorithmType.LSB,
+    )
+
+
+@pytest.fixture
+def mock_post_capacity_request(mock_big_image_bytes: bytes) -> PostCapacityRequest:
+    """Provide a mock PostCapacityRequest instance."""
+    image_data = base64.b64encode(mock_big_image_bytes).decode("utf-8")
+    return PostCapacityRequest(
+        image_data=image_data,
+        algorithm=AlgorithmType.LSB,
+    )
 
 
 # Algorithm fixtures
@@ -70,16 +111,22 @@ def mock_load_image(mock_big_image: np.ndarray[np.uint8]) -> Generator[MagicMock
 
 
 @pytest.fixture
-def mock_image_instance_lsb(mock_load_image: MagicMock) -> Image:
+def mock_big_image_bytes(mock_big_image: np.ndarray[np.uint8]) -> bytes:
+    """Provide bytes of a mock big image."""
+    return mock_big_image.tobytes()
+
+
+@pytest.fixture
+def mock_image_instance_lsb(mock_load_image: MagicMock, mock_big_image_bytes: bytes) -> Image:
     """Create an Image instance with LSB algorithm."""
     mock_image_instance = Image.lsb()
-    mock_image_instance.load_image(image_bytes=b"dummy_bytes")
+    mock_image_instance.load_image(image_bytes=mock_big_image_bytes)
     return mock_image_instance
 
 
 @pytest.fixture
-def mock_image_instance_dct(mock_load_image: MagicMock) -> Image:
+def mock_image_instance_dct(mock_load_image: MagicMock, mock_big_image_bytes: bytes) -> Image:
     """Create an Image instance with DCT algorithm."""
     mock_image_instance = Image.dct(block_size=8, dct_coefficient=3, quantization_factor=10)
-    mock_image_instance.load_image(image_bytes=b"dummy_bytes")
+    mock_image_instance.load_image(image_bytes=mock_big_image_bytes)
     return mock_image_instance

@@ -57,6 +57,11 @@ class TestEncryptionHandler:
         assert mock_encryption_handler.iv == mock_iv
         assert mock_encryption_handler.aes_key == mock_aes
 
+    def test_initialization_missing_parameters(self) -> None:
+        """Test that initialization raises ValueError when parameters are missing."""
+        with pytest.raises(ValueError, match=r"Either provide the keys or their sizes to generate new keys."):
+            EncryptionHandler()
+
     def test_private_key_to_str_and_str_to_private_key(self, mock_encryption_handler: EncryptionHandler) -> None:
         """Test conversion between RSAPrivateKey and its string representation."""
         private_key_str = EncryptionHandler.private_key_to_str(mock_encryption_handler.private_key)

@@ -17,7 +17,43 @@ export interface AuthContextType {
   logout: () => void;
 }
 
+// Steganography types
+export enum AlgorithmType {
+  LSB = "LSB",
+  DCT = "DCT",
+}
+
 // Response types
 export interface HealthResponse extends BaseResponse {
   status: string;
+}
+
+export interface EncodeResponse extends BaseResponse {
+  imageData: string; // Base64 encoded image
+}
+
+export interface DecodeResponse extends BaseResponse {
+  decodedMessage: string;
+}
+
+export interface CapacityResponse extends BaseResponse {
+  capacityCharacters: number; // Maximum number of characters that can be encoded
+}
+
+// Request types
+export interface EncodeRequest {
+  imageData: string; // Base64 encoded image
+  outputFormat: string; // e.g., "png", "jpeg"
+  message: string;
+  algorithm: AlgorithmType;
+}
+
+export interface DecodeRequest {
+  imageData: string; // Base64 encoded image
+  algorithm: AlgorithmType;
+}
+
+export interface CapacityRequest {
+  imageData: string; // Base64 encoded image
+  algorithm: AlgorithmType;
 }

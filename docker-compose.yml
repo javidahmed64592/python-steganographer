@@ -1,7 +1,7 @@
 services:
   # Python Steganographer
   python-steganographer:
-    # image: ${IMAGE:-ghcr.io/javidahmed64592/python-steganographer:latest}
+    image: ${IMAGE:-ghcr.io/javidahmed64592/python-steganographer:latest}
     build:
       context: .
       dockerfile: Dockerfile

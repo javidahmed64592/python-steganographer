@@ -1,5 +1,22 @@
 # Multi-stage Dockerfile for Python Steganographer
-# Stage 1: Build stage - build wheel using uv
+# Stage 1: Frontend build stage - build Next.js static export
+FROM node:22-alpine AS frontend-builder
+
+WORKDIR /frontend
+
+# Copy frontend package files
+COPY python-steganographer-frontend/package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy frontend source
+COPY python-steganographer-frontend/ ./
+
+# Build static export
+RUN npm run build
+
+# Stage 2: Backend build stage - build wheel using uv
 FROM python:3.13-slim AS backend-builder
 
 WORKDIR /build
@@ -14,10 +31,13 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 COPY python_steganographer/ ./python_steganographer/
 COPY pyproject.toml .here LICENSE README.md ./
 
+# Copy built frontend from previous stage
+COPY --from=frontend-builder /frontend/out ./static/
+
 # Build the wheel
 RUN uv build --wheel
 
-# Stage 2: Runtime stage
+# Stage 3: Runtime stage
 FROM python:3.13-slim
 
 WORKDIR /app
@@ -43,9 +63,11 @@ RUN mkdir -p /app/logs
 
 # Copy included files from installed wheel to app directory
 RUN SITE_PACKAGES_DIR=$(find /usr/local/lib -name "site-packages" -type d | head -1) && \
+    cp -r "${SITE_PACKAGES_DIR}/static" /app/ && \
     cp "${SITE_PACKAGES_DIR}/.here" /app/.here && \
     cp "${SITE_PACKAGES_DIR}/LICENSE" /app/LICENSE && \
-    cp "${SITE_PACKAGES_DIR}/README.md" /app/README.md
+    cp "${SITE_PACKAGES_DIR}/README.md" /app/README.md && \
+    cp "${SITE_PACKAGES_DIR}/SECURITY.md" /app/SECURITY.md
 
 # Create startup script
 RUN echo '#!/bin/sh\n\
@@ -66,6 +88,6 @@ EXPOSE $PORT
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('https://localhost:'\"$PORT\"'/api/health', context=__import__('ssl')._create_unverified_context()).read()" || exit 1
+    CMD python -c "import urllib.request; urllib.request.urlopen('https://localhost:$PORT/api/health', context=__import__('ssl')._create_unverified_context()).read()" || exit 1
 
 CMD ["/app/start.sh"]

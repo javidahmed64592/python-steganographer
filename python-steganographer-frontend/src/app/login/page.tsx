@@ -35,16 +35,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center bg-[var(--background)] -my-8 min-h-[calc(100vh-12rem)]">
-      <div className="w-full max-w-md p-8 space-y-6">
+    <div className="-my-8 flex min-h-[calc(100vh-12rem)] items-center justify-center bg-background">
+      <div className="w-full max-w-md space-y-6 p-8">
         {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold neon-glow text-[var(--text-primary)]">
+        <div className="space-y-2 text-center">
+          <h1 className="text-4xl font-bold text-text-primary">
             Python Steganographer
           </h1>
-          <p className="text-[var(--text-muted)]">
-            FastAPI based steganography server.
-          </p>
+          <p className="text-text-muted">FastAPI based steganography server.</p>
         </div>
 
         {/* Login Form */}
@@ -52,7 +50,7 @@ export default function LoginPage() {
           <div className="space-y-2">
             <label
               htmlFor="apiKey"
-              className="block text-sm font-medium text-[var(--text-primary)]"
+              className="block text-sm font-medium text-text-primary"
             >
               API Key
             </label>
@@ -63,15 +61,15 @@ export default function LoginPage() {
               onChange={e => setApiKey(e.target.value)}
               placeholder="Enter your API key"
               disabled={isLoading}
-              className="w-full px-4 py-3 bg-[var(--terminal-bg)] border border-[var(--terminal-border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--neon-cyan)] disabled:opacity-50"
+              className="w-full rounded-lg border border-terminal-border bg-terminal-bg px-4 py-3 text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-neon-green disabled:opacity-50"
               autoComplete="off"
             />
           </div>
 
           {/* Error Display */}
           {error && (
-            <div className="p-3 bg-[var(--terminal-bg)] border border-[var(--neon-red)] rounded-lg">
-              <p className="text-sm text-[var(--neon-red)]">❌ {error}</p>
+            <div className="rounded-lg border border-neon-red bg-terminal-bg p-3">
+              <p className="text-sm text-neon-red">❌ {error}</p>
             </div>
           )}
 
@@ -79,15 +77,15 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 px-4 bg-[var(--neon-cyan)] text-[var(--background)] font-medium rounded-lg hover:bg-opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full rounded-lg bg-neon-green px-4 py-3 font-medium text-background transition-all hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isLoading ? "Authenticating..." : "Login"}
           </button>
         </form>
 
         {/* Help Text */}
-        <div className="text-center space-y-2">
-          <p className="text-xs text-[var(--text-muted)]">
+        <div className="space-y-2 text-center">
+          <p className="text-xs text-text-muted">
             Your API key is stored locally and used to authenticate with the
             backend server.
           </p>

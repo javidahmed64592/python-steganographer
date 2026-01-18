@@ -47,7 +47,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AuthProvider>
-          <div className="min-h-screen bg-[var(--background)]">
+          <div className="min-h-screen bg-background">
             <Navigation />
             <main className="container mx-auto px-4 py-8 max-w-6xl pb-20">
               {children}

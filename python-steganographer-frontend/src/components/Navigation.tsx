@@ -30,7 +30,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="bg-[var(--background-secondary)] border-b border-[var(--terminal-border)] sticky top-0 z-50 w-full">
+    <nav className="sticky top-0 z-50 w-full border-b border-terminal-border bg-background-secondary">
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-center h-16 w-full justify-between">
           {/* Logo */}
@@ -45,7 +45,7 @@ const Navigation = () => {
                 priority
               /> */}
               <div className="flex flex-col">
-                <div className="text-xl sm:text-xl font-bold neon-glow text-[var(--text-primary)] nav-logo-text">
+                <div className="nav-logo-text text-xl font-bold text-text-primary sm:text-xl">
                   Python Steganographer
                 </div>
               </div>
@@ -66,11 +66,11 @@ const Navigation = () => {
                   key={item.name}
                   href={item.href}
                   className={`
-                    px-4 py-2 rounded-md text-sm font-medium transition-all duration-200
+                    rounded-md px-4 py-2 text-sm font-medium transition-all duration-200
                     ${
                       isActive
-                        ? "text-[var(--border-accent)] font-bold neon-glow"
-                        : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--background-tertiary)]"
+                        ? "font-bold text-border-accent"
+                        : "text-text-secondary hover:bg-background-tertiary hover:text-text-primary"
                     }
                   `}
                 >
@@ -81,7 +81,7 @@ const Navigation = () => {
             {isAuthenticated && (
               <button
                 onClick={logout}
-                className="ml-4 px-4 py-2 rounded-md text-sm font-medium text-[var(--neon-red)] hover:bg-[var(--background-tertiary)] transition-all duration-200"
+                className="ml-4 rounded-md px-4 py-2 text-sm font-medium text-neon-red transition-all duration-200 hover:bg-background-tertiary"
               >
                 Logout
               </button>
@@ -92,7 +92,7 @@ const Navigation = () => {
           <div className="lg:hidden">
             <button
               onClick={toggleMenu}
-              className="inline-flex items-center justify-center p-2 rounded-md text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--background-tertiary)] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[var(--border-accent)]"
+              className="inline-flex items-center justify-center rounded-md p-2 text-text-secondary focus:outline-none focus:ring-2 focus:ring-inset focus:ring-border-accent hover:bg-background-tertiary hover:text-text-primary"
               aria-expanded="false"
             >
               <span className="sr-only">Open main menu</span>
@@ -134,7 +134,7 @@ const Navigation = () => {
 
         {/* Mobile Menu */}
         <div className={`lg:hidden ${isMenuOpen ? "block" : "hidden"}`}>
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-[var(--terminal-border)] mt-2">
+          <div className="mt-2 space-y-1 border-t border-terminal-border px-2 pb-3 pt-2 sm:px-3">
             {navItems.map(item => {
               const normalized = (pathname || "").replace(/\/$/, "") || "/";
               const isActive =
@@ -147,11 +147,11 @@ const Navigation = () => {
                   href={item.href}
                   onClick={closeMenu}
                   className={`
-                    block px-3 py-2 rounded-md text-base font-medium transition-all duration-200
+                    block rounded-md px-3 py-2 text-base font-medium transition-all duration-200
                     ${
                       isActive
-                        ? "text-[var(--border-accent)] font-bold neon-glow bg-[var(--background-tertiary)]"
-                        : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--background-tertiary)]"
+                        ? "bg-background-tertiary font-bold text-border-accent"
+                        : "text-text-secondary hover:bg-background-tertiary hover:text-text-primary"
                     }
                   `}
                 >
@@ -165,7 +165,7 @@ const Navigation = () => {
                   closeMenu();
                   logout();
                 }}
-                className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-[var(--neon-red)] hover:bg-[var(--background-tertiary)] transition-all duration-200"
+                className="block w-full rounded-md px-3 py-2 text-left text-base font-medium text-neon-red transition-all duration-200 hover:bg-background-tertiary"
               >
                 Logout
               </button>

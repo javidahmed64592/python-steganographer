@@ -2,7 +2,16 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 import { getApiKey } from "@/lib/auth";
-import type { HealthResponse, LoginResponse } from "@/lib/types";
+import type {
+  CapacityRequest,
+  CapacityResponse,
+  DecodeRequest,
+  DecodeResponse,
+  EncodeRequest,
+  EncodeResponse,
+  HealthResponse,
+  LoginResponse,
+} from "@/lib/types";
 
 // Determine the base URL based on environment
 const getBaseURL = () => {
@@ -99,6 +108,113 @@ export const login = async (apiKey: string): Promise<LoginResponse> => {
     }
 
     return data;
+  } catch (error) {
+    throw new Error(extractErrorMessage(error));
+  }
+};
+
+export const encodeImage = async (
+  request: EncodeRequest
+): Promise<EncodeResponse> => {
+  try {
+    // Convert camelCase to snake_case for backend
+    const payload = {
+      image_data: request.imageData,
+      output_format: request.outputFormat,
+      message: request.message,
+      algorithm: request.algorithm,
+    };
+
+    const response = await api.post<{
+      code: number;
+      message: string;
+      timestamp: string;
+      image_data: string;
+    }>("/image/encode", payload);
+
+    const data = response.data;
+
+    if (!isSuccessResponse(data)) {
+      throw new Error(data.message || "Image encoding failed");
+    }
+
+    // Convert snake_case response to camelCase
+    return {
+      code: data.code,
+      message: data.message,
+      timestamp: data.timestamp,
+      imageData: data.image_data,
+    };
+  } catch (error) {
+    throw new Error(extractErrorMessage(error));
+  }
+};
+
+export const decodeImage = async (
+  request: DecodeRequest
+): Promise<DecodeResponse> => {
+  try {
+    // Convert camelCase to snake_case for backend
+    const payload = {
+      image_data: request.imageData,
+      algorithm: request.algorithm,
+    };
+
+    const response = await api.post<{
+      code: number;
+      message: string;
+      timestamp: string;
+      decoded_message: string;
+    }>("/image/decode", payload);
+
+    const data = response.data;
+
+    if (!isSuccessResponse(data)) {
+      throw new Error(data.message || "Image decoding failed");
+    }
+
+    // Convert snake_case response to camelCase
+    return {
+      code: data.code,
+      message: data.message,
+      timestamp: data.timestamp,
+      decodedMessage: data.decoded_message,
+    };
+  } catch (error) {
+    throw new Error(extractErrorMessage(error));
+  }
+};
+
+export const getImageCapacity = async (
+  request: CapacityRequest
+): Promise<CapacityResponse> => {
+  try {
+    // Convert camelCase to snake_case for backend
+    const payload = {
+      image_data: request.imageData,
+      algorithm: request.algorithm,
+    };
+
+    const response = await api.post<{
+      code: number;
+      message: string;
+      timestamp: string;
+      capacity_characters: number;
+    }>("/image/capacity", payload);
+
+    const data = response.data;
+
+    if (!isSuccessResponse(data)) {
+      throw new Error(data.message || "Capacity check failed");
+    }
+
+    // Convert snake_case response to camelCase
+    return {
+      code: data.code,
+      message: data.message,
+      timestamp: data.timestamp,
+      capacityCharacters: data.capacity_characters,
+    };
   } catch (error) {
     throw new Error(extractErrorMessage(error));
   }

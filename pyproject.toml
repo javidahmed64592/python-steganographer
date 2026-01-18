@@ -39,10 +39,14 @@ allow-direct-references = true
 [tool.hatch.build]
 include = [
   "python_steganographer/**",
+  "static/**",
   ".here",
   "LICENSE",
   "README.md",
 ]
+
+[tool.hatch.build.force-include]
+"static" = "static"
 
 [tool.pytest.ini_options]
 addopts = [
@@ -163,7 +167,6 @@ pretty = true
 
 [[tool.mypy.overrides]]
 module = [
-    "pyhere.*",
     "python_template_server.*",
     "scipy.*",
 ]

@@ -17,14 +17,14 @@ const getBackendURL = () => {
       __dirname,
       "..",
       "configuration",
-      "config.json",
+      "config.json"
     );
     const configData = fs.readFileSync(configPath, "utf-8");
     const config: BackendConfig = JSON.parse(configData);
     return `https://${config.server.host}:${config.server.port}`;
   } catch (error) {
     console.warn(
-      "Failed to read config.json, falling back to https://localhost:443",
+      "Failed to read config.json, falling back to https://localhost:443"
     );
     return "https://localhost:443";
   }

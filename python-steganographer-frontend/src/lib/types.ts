@@ -19,8 +19,8 @@ export interface AuthContextType {
 
 // Steganography types
 export enum AlgorithmType {
-  LSB = "LSB",
-  DCT = "DCT",
+  LSB = "lsb",
+  DCT = "dct",
 }
 
 // Response types

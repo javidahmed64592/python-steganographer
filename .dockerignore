@@ -57,6 +57,14 @@ docker-compose.yml
 # Tests
 tests/
 
+# Frontend build artifacts
+python-steganographer-frontend/node_modules/
+python-steganographer-frontend/.next/
+python-steganographer-frontend/out/
+
+# Static files (built in Docker)
+static/
+
 # Miscellaneous
 .DS_Store
 *.bak

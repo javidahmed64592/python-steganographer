@@ -66,8 +66,7 @@ RUN SITE_PACKAGES_DIR=$(find /usr/local/lib -name "site-packages" -type d | head
     cp -r "${SITE_PACKAGES_DIR}/static" /app/ && \
     cp "${SITE_PACKAGES_DIR}/.here" /app/.here && \
     cp "${SITE_PACKAGES_DIR}/LICENSE" /app/LICENSE && \
-    cp "${SITE_PACKAGES_DIR}/README.md" /app/README.md && \
-    cp "${SITE_PACKAGES_DIR}/SECURITY.md" /app/SECURITY.md
+    cp "${SITE_PACKAGES_DIR}/README.md" /app/README.md
 
 # Create startup script
 RUN echo '#!/bin/sh\n\

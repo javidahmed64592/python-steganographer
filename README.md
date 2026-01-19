@@ -23,6 +23,10 @@ Hide encrypted messages in images using LSB or DCT algorithms with comprehensive
   - [Installation](#installation)
   - [Generate API Token](#generate-api-token)
   - [Run the Server](#run-the-server)
+- [Frontend](#frontend)
+  - [Features](#features-1)
+  - [Quick Start](#quick-start-1)
+  - [Stack](#stack)
 - [Documentation](#documentation)
 - [License](#license)
 
@@ -102,6 +106,47 @@ curl -k -H "X-API-Key: your-token-here" \
   -d '{"image_data":"base64_encoded_image","algorithm":"lsb"}' \
   https://localhost:443/api/image/decode
 ```
+
+## Frontend
+
+A Next.js web interface with Tailwind CSS v4 for intuitive steganography operations.
+
+### Features
+
+- **Dual Mode Interface**: Switch between encode and decode operations
+- **Algorithm Selection**: Choose LSB or DCT algorithms with visual feedback
+- **Real-time Capacity**: Automatic calculation of maximum message size
+- **Image Preview**: Side-by-side comparison of original and encoded images
+- **Download Support**: Export encoded images in multiple formats
+- **Authentication**: Secure API key-based authentication with health monitoring
+
+### Quick Start
+
+```sh
+cd python-steganographer-frontend
+
+# Install dependencies
+npm install
+
+# Development server
+npm run dev
+# Open http://localhost:3000
+
+# Production build
+npm run build
+npm start
+
+# Run tests
+npm test
+```
+
+### Stack
+
+- **Next.js**: App directory, server components, TypeScript
+- **Tailwind CSS v4**: Custom theme with @theme directive
+- **Jest + React Testing Library**: Comprehensive unit tests
+- **Axios**: API client with camelCase/snake_case conversion
+- **Zustand**: Lightweight state management for authentication
 
 ## Documentation
 

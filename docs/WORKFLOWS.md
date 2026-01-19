@@ -42,6 +42,14 @@ It consists of the following jobs:
 - Setup Python environment with dev dependencies (via custom action)
 - Audit dependencies for known CVEs using `pip-audit --desc`
 
+### frontend
+- Checkout code
+- Set up Node.js  and dependencies with npm caching (via custom action)
+- Run type checking with `npm run type-check`
+- Run linting with `npm run lint`
+- Run formatting check with `npm run format`
+- Run tests with `npm run test`
+
 ### version-check
 - Checkout code
 - Setup Python environment with dev dependencies (via custom action)
@@ -52,9 +60,17 @@ It consists of the following jobs:
 The Build workflow runs on pushes and pull requests to the `main` branch.
 It consists of the following jobs:
 
+### build-frontend
+- Checkout code
+- Set up Node.js and dependencies with npm caching (via custom action)
+- Build frontend with `npm run build`
+- Upload frontend build artifact (`python_steganographer_frontend`)
+
 ### build-wheel
+- Depends on `build-frontend` job
 - Checkout code
 - Setup Python environment with dev dependencies (via custom action)
+- Download frontend build artifact to `static/` directory
 - Build wheel with `uv build`
 - Inspect wheel contents for verification
 - Upload wheel artifact (`python_steganographer_wheel`)

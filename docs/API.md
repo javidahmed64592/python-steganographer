@@ -16,9 +16,19 @@ The Python Steganographer is built from [python-template-server](https://github.
 
 For detailed information about these features, authentication token generation, server middleware, and base configuration, see the [python-template-server README](https://github.com/javidahmed64592/python-template-server/blob/main/README.md) and [python-template-server API documentation](https://github.com/javidahmed64592/python-template-server/blob/main/docs/API.md).
 
+## Frontend Client
+
+The project includes a Next.js frontend (`python-steganographer-frontend/`) with a TypeScript API client (`src/lib/api.ts`) that handles:
+
+- **Authentication**: Automatic API key injection via Axios interceptors
+- **Error Handling**: Extracts FastAPI error details from response messages
+- **Type Safety**: Full TypeScript support with Pydantic-aligned models (`src/lib/types.ts`)
+- **Functions**: `encodeImage()`, `decodeImage()`, `getImageCapacity()`, `getHealth()`, `login()`
+
 <!-- omit from toc -->
 ## Table of Contents
 - [Base Server Infrastructure](#base-server-infrastructure)
+- [Frontend Client](#frontend-client)
 - [Steganography Endpoints](#steganography-endpoints)
   - [POST /api/image/encode](#post-apiimageencode)
   - [POST /api/image/decode](#post-apiimagedecode)

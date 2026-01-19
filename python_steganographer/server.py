@@ -48,7 +48,6 @@ class SteganographerServer(TemplateServer):
 
     def setup_routes(self) -> None:
         """Set up API routes."""
-        super().setup_routes()
         self.add_authenticated_route(
             endpoint="/image/encode",
             handler_function=self.post_encode,
@@ -67,6 +66,7 @@ class SteganographerServer(TemplateServer):
             response_model=PostCapacityResponse,
             methods=["POST"],
         )
+        super().setup_routes()
 
     def _get_image_instance_from_algorithm(self, algorithm: AlgorithmType) -> Image:
         """Get an Image instance based on the specified algorithm.

@@ -1,7 +1,5 @@
 [![python](https://img.shields.io/badge/Python-3.13-3776AB.svg?style=flat&logo=python&logoColor=ffd343)](https://docs.python.org/3.13/)
-[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
-[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![FastAPI](https://img.shields.io/badge/FastAPI-Latest-009688?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![CI](https://img.shields.io/github/actions/workflow/status/javidahmed64592/python-steganographer/ci.yml?branch=main&style=flat-square&label=CI&logo=github)](https://github.com/javidahmed64592/python-steganographer/actions/workflows/ci.yml)
 [![Build](https://img.shields.io/github/actions/workflow/status/javidahmed64592/python-steganographer/build.yml?branch=main&style=flat-square&label=Build&logo=github)](https://github.com/javidahmed64592/python-steganographer/actions/workflows/build.yml)
 [![Docker](https://img.shields.io/github/actions/workflow/status/javidahmed64592/python-steganographer/docker.yml?branch=main&style=flat-square&label=Docker&logo=github)](https://github.com/javidahmed64592/python-steganographer/actions/workflows/docker.yml)
@@ -18,15 +16,14 @@ Hide encrypted messages in images using LSB or DCT algorithms with comprehensive
 - [Features](#features)
   - [Steganography Capabilities](#steganography-capabilities)
   - [Security Features](#security-features)
-- [Quick Start](#quick-start)
+- [Quick Start - Docker](#quick-start---docker)
+- [Quick Start - From Source](#quick-start---from-source)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Generate API Token](#generate-api-token)
+  - [Build the UI](#build-the-ui)
   - [Run the Server](#run-the-server)
-- [Frontend](#frontend)
-  - [Features](#features-1)
-  - [Quick Start](#quick-start-1)
-  - [Stack](#stack)
+- [Links](#links)
 - [Documentation](#documentation)
 - [License](#license)
 
@@ -57,7 +54,18 @@ Hide encrypted messages in images using LSB or DCT algorithms with comprehensive
 - **Random IV**: Unique initialization vector for each operation
 - **Multi-Channel Embedding**: Data distributed across RGB channels
 
-## Quick Start
+## Quick Start - Docker
+
+```sh
+# Clone the repository
+git clone https://github.com/javidahmed64592/python-steganographer.git
+cd python-steganographer
+
+docker compose up --build  # Build from Dockerfile
+docker compose up          # From image
+```
+
+## Quick Start - From Source
 
 ### Prerequisites
 
@@ -82,71 +90,28 @@ uv run generate-new-token
 # ⚠️ Save the displayed token - you'll need it for API requests!
 ```
 
+### Build the UI
+
+```sh
+cd python-steganographer-frontend
+npm install
+npm run build
+cp -r out ../static
+```
+
 ### Run the Server
 
 ```sh
 # Start the server
 uv run python-steganographer
-
-# Server runs at https://localhost:443/api
-# Swagger UI: https://localhost:443/api/docs
-# Redoc: https://localhost:443/api/redoc
-# Health check: curl -k https://localhost:443/api/health
-# Login (requires authentication): curl -k -H "X-API-Key: your-token-here" https://localhost:443/api/login
-
-# Example: Encode a message
-curl -k -H "X-API-Key: your-token-here" \
-  -H "Content-Type: application/json" \
-  -d '{"image_data":"base64_image","output_format":"png","message":"Secret","algorithm":"lsb"}' \
-  https://localhost:443/api/image/encode
-
-# Example: Decode a message
-curl -k -H "X-API-Key: your-token-here" \
-  -H "Content-Type: application/json" \
-  -d '{"image_data":"base64_encoded_image","algorithm":"lsb"}' \
-  https://localhost:443/api/image/decode
 ```
 
-## Frontend
+## Links
 
-A Next.js web interface with Tailwind CSS v4 for intuitive steganography operations.
-
-### Features
-
-- **Dual Mode Interface**: Switch between encode and decode operations
-- **Algorithm Selection**: Choose LSB or DCT algorithms with visual feedback
-- **Real-time Capacity**: Automatic calculation of maximum message size
-- **Image Preview**: Side-by-side comparison of original and encoded images
-- **Download Support**: Export encoded images in multiple formats
-- **Authentication**: Secure API key-based authentication with health monitoring
-
-### Quick Start
-
-```sh
-cd python-steganographer-frontend
-
-# Install dependencies
-npm install
-
-# Development server
-npm run dev
-# Open http://localhost:3000
-
-# Production build
-npm run build
-npm start
-
-# Run tests
-npm test
-```
-
-### Stack
-
-- **Next.js**: App directory, server components, TypeScript
-- **Tailwind CSS v4**: Custom theme with @theme directive
-- **Jest + React Testing Library**: Comprehensive unit tests
-- **Axios**: API client with camelCase/snake_case conversion
-- **Zustand**: Lightweight state management for authentication
+- Access the web application: https://localhost:443
+- Server runs at: https://localhost:443/api
+- Swagger UI: https://localhost:443/api/docs
+- Redoc: https://localhost:443/api/redoc
 
 ## Documentation
 

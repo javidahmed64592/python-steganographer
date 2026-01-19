@@ -148,30 +148,34 @@ See the [API Documentation](./API.md) for detailed endpoint specifications.
 ### Directory Structure
 
 ```
-cyber-query-ai-frontend/
+python-steganographer-frontend/
 ├── src/
 │   ├── app/
-│   │   ├── home/                # Home page layout with image panel and encoding/decoding
-│   │   ├── login/               # Login page for API key authentication
-│   │   ├── globals.css          # UI style configuration
-│   │   ├── layout.tsx           # Root layout with AuthProvider and navigation
-│   │   ├── not-found.tsx        # Not found page
-│   │   └── page.tsx             # Homepage
+│   │   ├── home/                 # Home page layout with image panel and encoding/decoding
+│   │   ├── login/                # Login page for API key authentication
+│   │   ├── globals.css           # UI style configuration
+│   │   ├── layout.tsx            # Root layout with AuthProvider and navigation
+│   │   ├── not-found.tsx         # Not found page
+│   │   └── page.tsx              # Homepage
 │   ├── components/
-│   │   ├── Footer.tsx           # App footer with version info
-│   │   ├── HealthIndicator.tsx  # Server health status indicator
-│   │   └── Navigation.tsx       # Main navigation bar with logout
+│   │   ├── AlgorithmSelector.tsx # Algorithm selection for image processing
+│   │   ├── DecodePanel.tsx       # Panel for decoding images
+│   │   ├── EncodePanel.tsx       # Panel for encoding images
+│   │   ├── Footer.tsx            # App footer with version info
+│   │   ├── HealthIndicator.tsx   # Server health status indicator
+│   │   ├── ImagePanel.tsx        # Panel to display images
+│   │   └── Navigation.tsx        # Main navigation bar with logout
 │   ├── contexts/
-│   │   └── AuthContext.tsx      # Authentication context and route protection
+│   │   └── AuthContext.tsx       # Authentication context and route protection
 │   ├── lib/
-│   │   ├── api.ts               # API client with authentication interceptors
-│   │   ├── auth.ts              # localStorage API key management
-│   │   └── types.ts             # TypeScript type definitions (matches backend models)
-├── jest.config.js               # Jest configuration for testing
-├── jest.setup.js                # Jest setup for mocking and environment
-├── next.config.ts               # Next.js configuration
-├── package.json                 # Dependencies and scripts
-└── postcss.config.mjs           # Tailwind CSS configuration
+│   │   ├── api.ts                # API client with authentication interceptors
+│   │   ├── auth.ts               # localStorage API key management
+│   │   └── types.ts              # TypeScript type definitions (matches backend models)
+├── jest.config.js                # Jest configuration for testing
+├── jest.setup.js                 # Jest setup for mocking and environment
+├── next.config.ts                # Next.js configuration
+├── package.json                  # Dependencies and scripts
+└── postcss.config.mjs            # Tailwind CSS configuration
 ```
 
 ### Installing Dependencies
@@ -189,7 +193,7 @@ Ensure the backend server is running (see [Running the Backend](#running-the-bac
 
 **Start the development server:**
 ```bash
-cd cyber-query-ai-frontend
+cd python-steganographer-frontend
 npm run dev
 ```
 
@@ -227,14 +231,14 @@ When preparing a new release, you must update version numbers across multiple fi
 1. **Update `pyproject.toml`** (backend version):
    ```toml
    [project]
-   name = "cyber-query-ai"
+   name = "python-steganographer"
    version = "X.Y.Z"  # Update this line
    ```
 
-2. **Update `cyber-query-ai-frontend/package.json`** (frontend version):
+2. **Update `python-steganographer-frontend/package.json`** (frontend version):
    ```json
    {
-     "name": "cyber-query-ai-frontend",
+     "name": "python-steganographer-frontend",
      "version": "X.Y.Z"  // Update this line to match backend
    }
    ```
@@ -244,8 +248,8 @@ When preparing a new release, you must update version numbers across multiple fi
    uv lock
    ```
 
-4. **Synchronize `package-lock.json`** (from `cyber-query-ai-frontend` directory):
+4. **Synchronize `package-lock.json`** (from `python-steganographer-frontend` directory):
    ```sh
-   cd cyber-query-ai-frontend
+   cd python-steganographer-frontend
    npm install --package-lock-only
    ```

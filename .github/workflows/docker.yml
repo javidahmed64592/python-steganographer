@@ -233,24 +233,27 @@ jobs:
           cat > release_notes.md << 'EOF'
           ## Python Steganographer v${{ steps.get_version.outputs.version }}
 
-          **A FastAPI application for steganography.**
+          **FastAPI steganography server with hybrid encryption (RSA-2048 + AES-256). Hide encrypted messages in images using LSB or DCT algorithms.**
 
           ### Quick Start
 
-          Download the latest release tarball from the [Releases](https://github.com/${{ github.repository }}/releases) page.
-
           ```bash
-          # Extract the tarball
+          # Download and extract
           tar -xzf ${{ env.PACKAGE_NAME }}_${{ steps.get_version.outputs.version }}.tar.gz
           cd ${{ env.PACKAGE_NAME }}_${{ steps.get_version.outputs.version }}
 
-          # Run the installer
+          # Install as systemd service
           ./${{ env.INSTALLER_NAME }}
           ```
 
-          This will install the server as a systemd service and start it automatically.
+          ### Access Points
 
-          Access the application at `https://localhost:443`
+          - **Web Application**: https://localhost:443
+          - **API Server**: https://localhost:443/api
+          - **Swagger UI**: https://localhost:443/api/docs
+          - **ReDoc**: https://localhost:443/api/redoc
+
+          ### Documentation
 
           - [README](https://github.com/${{ github.repository }}/blob/main/README.md)
           - [API Documentation](https://github.com/${{ github.repository }}/blob/main/docs/API.md)

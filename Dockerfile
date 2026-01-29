@@ -79,7 +79,7 @@ RUN echo '#!/bin/sh\n\
     export $(grep -v "^#" .env | xargs)\n\
     fi\n\
     \n\
-    exec python-steganographer --port $PORT' > /app/start.sh && \
+    exec python-steganographer' > /app/start.sh && \
     chmod +x /app/start.sh
 
 # Expose server port

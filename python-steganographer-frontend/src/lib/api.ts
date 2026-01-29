@@ -80,10 +80,6 @@ const extractErrorMessage = (error: unknown): string => {
   return "An unexpected error occurred";
 };
 
-const isSuccessResponse = (data: { code?: number }): boolean => {
-  return data.code !== undefined && data.code >= 200 && data.code < 300;
-};
-
 // API functions
 export const getHealth = async (): Promise<HealthResponse> => {
   try {
@@ -101,18 +97,13 @@ export const login = async (apiKey: string): Promise<LoginResponse> => {
         "X-API-KEY": apiKey,
       },
     });
-    const data = response.data;
-
-    if (!isSuccessResponse(data)) {
-      throw new Error(data.message || "Login failed");
-    }
-
-    return data;
+    return response.data;
   } catch (error) {
     throw new Error(extractErrorMessage(error));
   }
 };
 
+// Steganography API functions
 export const encodeImage = async (
   request: EncodeRequest
 ): Promise<EncodeResponse> => {
@@ -126,7 +117,6 @@ export const encodeImage = async (
     };
 
     const response = await api.post<{
-      code: number;
       message: string;
       timestamp: string;
       image_data: string;
@@ -134,13 +124,8 @@ export const encodeImage = async (
 
     const data = response.data;
 
-    if (!isSuccessResponse(data)) {
-      throw new Error(data.message || "Image encoding failed");
-    }
-
     // Convert snake_case response to camelCase
     return {
-      code: data.code,
       message: data.message,
       timestamp: data.timestamp,
       imageData: data.image_data,
@@ -161,7 +146,6 @@ export const decodeImage = async (
     };
 
     const response = await api.post<{
-      code: number;
       message: string;
       timestamp: string;
       decoded_message: string;
@@ -169,13 +153,8 @@ export const decodeImage = async (
 
     const data = response.data;
 
-    if (!isSuccessResponse(data)) {
-      throw new Error(data.message || "Image decoding failed");
-    }
-
     // Convert snake_case response to camelCase
     return {
-      code: data.code,
       message: data.message,
       timestamp: data.timestamp,
       decodedMessage: data.decoded_message,
@@ -196,7 +175,6 @@ export const getImageCapacity = async (
     };
 
     const response = await api.post<{
-      code: number;
       message: string;
       timestamp: string;
       capacity_characters: number;
@@ -204,13 +182,8 @@ export const getImageCapacity = async (
 
     const data = response.data;
 
-    if (!isSuccessResponse(data)) {
-      throw new Error(data.message || "Capacity check failed");
-    }
-
     // Convert snake_case response to camelCase
     return {
-      code: data.code,
       message: data.message,
       timestamp: data.timestamp,
       capacityCharacters: data.capacity_characters,

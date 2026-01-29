@@ -6,7 +6,7 @@ from importlib.metadata import PackageMetadata
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from fastapi import Request, Security
+from fastapi import HTTPException, Request, Security
 from fastapi.routing import APIRoute
 from fastapi.security import APIKeyHeader
 from fastapi.testclient import TestClient
@@ -130,7 +130,6 @@ class TestPostEncodeEndpoint:
         """Test the /image/encode method handles valid JSON and returns a model reply."""
         response = asyncio.run(mock_server.post_encode(mock_request_object))
 
-        assert response.code == ResponseCode.OK
         assert response.message == "Image encoded successfully"
         assert isinstance(response.timestamp, str)
         assert isinstance(response.image_data, str)
@@ -142,13 +141,11 @@ class TestPostEncodeEndpoint:
         mock_image_instance: Image,
     ) -> None:
         """Test /image/encode handles errors gracefully."""
-        with patch.object(mock_image_instance, "encode", side_effect=Exception("Encoding failed")):
-            response = asyncio.run(mock_server.post_encode(mock_request_object))
-
-        assert response.code == ResponseCode.INTERNAL_SERVER_ERROR
-        assert response.message == "Failed to encode image"
-        assert isinstance(response.timestamp, str)
-        assert response.image_data == ""
+        with (
+            pytest.raises(HTTPException, match=r"Failed to encode image"),
+            patch.object(mock_image_instance, "encode", side_effect=Exception("Encoding failed")),
+        ):
+            asyncio.run(mock_server.post_encode(mock_request_object))
 
     def test_post_encode_endpoint(
         self,
@@ -166,7 +163,6 @@ class TestPostEncodeEndpoint:
         assert response.status_code == ResponseCode.OK
 
         response_body = response.json()
-        assert response_body["code"] == ResponseCode.OK
         assert response_body["message"] == "Image encoded successfully"
         assert isinstance(response_body["timestamp"], str)
         assert isinstance(response_body["image_data"], str)
@@ -190,7 +186,6 @@ class TestPostDecodeEndpoint:
         """Test the /image/decode method handles valid JSON and returns a model reply."""
         response = asyncio.run(mock_server.post_decode(mock_request_object))
 
-        assert response.code == ResponseCode.OK
         assert response.message == "Image decoded successfully"
         assert isinstance(response.timestamp, str)
         assert isinstance(response.decoded_message, str)
@@ -202,13 +197,11 @@ class TestPostDecodeEndpoint:
         mock_image_instance: Image,
     ) -> None:
         """Test /image/decode handles errors gracefully."""
-        with patch.object(mock_image_instance, "decode", side_effect=Exception("Decoding failed")):
-            response = asyncio.run(mock_server.post_decode(mock_request_object))
-
-        assert response.code == ResponseCode.INTERNAL_SERVER_ERROR
-        assert response.message == "Failed to decode image"
-        assert isinstance(response.timestamp, str)
-        assert response.decoded_message == ""
+        with (
+            pytest.raises(HTTPException, match=r"Failed to decode image"),
+            patch.object(mock_image_instance, "decode", side_effect=Exception("Decoding failed")),
+        ):
+            asyncio.run(mock_server.post_decode(mock_request_object))
 
     def test_post_decode_endpoint(
         self,
@@ -226,7 +219,6 @@ class TestPostDecodeEndpoint:
         assert response.status_code == ResponseCode.OK
 
         response_body = response.json()
-        assert response_body["code"] == ResponseCode.OK
         assert response_body["message"] == "Image decoded successfully"
         assert isinstance(response_body["timestamp"], str)
         assert isinstance(response_body["decoded_message"], str)
@@ -250,7 +242,6 @@ class TestPostCapacityEndpoint:
         """Test the /image/capacity method handles valid JSON and returns a model reply."""
         response = asyncio.run(mock_server.post_capacity(mock_request_object))
 
-        assert response.code == ResponseCode.OK
         assert response.message == "Capacity calculated successfully"
         assert isinstance(response.timestamp, str)
         assert isinstance(response.capacity_characters, int)
@@ -262,13 +253,11 @@ class TestPostCapacityEndpoint:
         mock_image_instance: Image,
     ) -> None:
         """Test /image/capacity handles errors gracefully."""
-        with patch.object(mock_image_instance, "get_capacity", side_effect=Exception("Capacity calculation failed")):
-            response = asyncio.run(mock_server.post_capacity(mock_request_object))
-
-        assert response.code == ResponseCode.INTERNAL_SERVER_ERROR
-        assert response.message == "Failed to calculate capacity"
-        assert isinstance(response.timestamp, str)
-        assert response.capacity_characters == 0
+        with (
+            pytest.raises(HTTPException, match=r"Failed to calculate capacity"),
+            patch.object(mock_image_instance, "get_capacity", side_effect=Exception("Capacity calculation failed")),
+        ):
+            asyncio.run(mock_server.post_capacity(mock_request_object))
 
     def test_post_capacity_endpoint(
         self,
@@ -286,7 +275,6 @@ class TestPostCapacityEndpoint:
         assert response.status_code == ResponseCode.OK
 
         response_body = response.json()
-        assert response_body["code"] == ResponseCode.OK
         assert response_body["message"] == "Capacity calculated successfully"
         assert isinstance(response_body["timestamp"], str)
         assert isinstance(response_body["capacity_characters"], int)

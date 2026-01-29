@@ -20,7 +20,6 @@ describe("EncodePanel", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockGetImageCapacity.mockResolvedValue({
-      code: 200,
       message: "Success",
       timestamp: "2026-01-01T12:00:00Z",
       capacityCharacters: 100,
@@ -136,7 +135,6 @@ describe("EncodePanel", () => {
 
   it("successfully encodes message", async () => {
     mockEncodeImage.mockResolvedValue({
-      code: 200,
       message: "Success",
       timestamp: "2026-01-01T12:00:00Z",
       imageData: "encodedbase64",

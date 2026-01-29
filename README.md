@@ -8,7 +8,7 @@
 <!-- omit from toc -->
 # Python Steganographer
 
-A production-ready FastAPI steganography server with hybrid encryption (RSA-2048 + AES-256) built on [python-template-server](https://github.com/javidahmed64592/python-template-server).
+A production-ready FastAPI steganography server with hybrid encryption built on [python-template-server](https://github.com/javidahmed64592/python-template-server).
 Hide encrypted messages in images using LSB or DCT algorithms with comprehensive API security.
 
 <!-- omit from toc -->
@@ -16,13 +16,10 @@ Hide encrypted messages in images using LSB or DCT algorithms with comprehensive
 - [Features](#features)
   - [Steganography Capabilities](#steganography-capabilities)
   - [Security Features](#security-features)
-- [Quick Start - Docker](#quick-start---docker)
-- [Quick Start - From Source](#quick-start---from-source)
-  - [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
   - [Installation](#installation)
-  - [Generate API Token](#generate-api-token)
-  - [Build the UI](#build-the-ui)
-  - [Run the Server](#run-the-server)
+  - [Configuration](#configuration)
+  - [Managing the Container](#managing-the-container)
 - [Links](#links)
 - [Documentation](#documentation)
 - [License](#license)
@@ -54,56 +51,39 @@ Hide encrypted messages in images using LSB or DCT algorithms with comprehensive
 - **Random IV**: Unique initialization vector for each operation
 - **Multi-Channel Embedding**: Data distributed across RGB channels
 
-## Quick Start - Docker
-
-```sh
-# Clone the repository
-git clone https://github.com/javidahmed64592/python-steganographer.git
-cd python-steganographer
-
-docker compose up --build  # Build from Dockerfile
-docker compose up          # From image
-```
-
-## Quick Start - From Source
-
-### Prerequisites
-
-- Python 3.13+
-- [uv](https://docs.astral.sh/uv/) package manager
+## Quick Start
 
 ### Installation
 
-```sh
-# Clone the repository
-git clone https://github.com/javidahmed64592/python-steganographer.git
-cd python-steganographer
+Download the latest release from [GitHub Releases](https://github.com/javidahmed64592/python-steganographer/releases).
 
-# Install dependencies
-uv sync --extra dev
+### Configuration
+
+Rename `.env.example` to `.env` and edit it to configure the server.
+
+- `HOST`: Server host address (default: localhost)
+- `PORT`: Server port (default: 443)
+- `API_TOKEN_HASH`: Leave blank to auto-generate on first run, or provide your own token hash
+
+### Managing the Container
+
+```sh
+# Start the container
+docker compose up -d
+
+# Stop the container
+docker compose down
+
+# Update to the latest version
+docker compose pull && docker compose up -d
+
+# View the logs
+docker compose logs -f pi-dashboard
 ```
 
-### Generate API Token
-
+**Note:** You may need to add your user to the Docker group and log out/in for permission changes to take effect:
 ```sh
-uv run generate-new-token
-# ⚠️ Save the displayed token - you'll need it for API requests!
-```
-
-### Build the UI
-
-```sh
-cd python-steganographer-frontend
-npm install
-npm run build
-cp -r out ../static
-```
-
-### Run the Server
-
-```sh
-# Start the server
-uv run python-steganographer
+sudo usermod -aG docker ${USER}
 ```
 
 ## Links

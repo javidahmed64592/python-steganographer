@@ -30,32 +30,19 @@ This document outlines how to configure and setup a development environment to w
 
 ```
 python_steganographer/
-├── algorithms.py         # Steganography algorithms (LSB, DCT)
-├── constants.py          # Application constants (key sizes, DCT defaults)
-├── encryption.py         # Encryption/decryption handlers (RSA + AES)
-├── helpers.py            # Utility functions (byte/string conversions)
+├── algorithms.py         # Steganography algorithms
+├── constants.py          # Application constants
+├── encryption.py         # Encryption/decryption handlers
+├── helpers.py            # Utility functions
 ├── image.py              # Image class for steganography operations
 ├── main.py               # Application entry point
-├── models.py             # Pydantic models (config + API request/response)
+├── models.py             # Pydantic models
 └── server.py             # SteganographerServer class (extends TemplateServer)
 ```
-
-**Key Modules**:
-- **server.py**: Extends `TemplateServer` from python-template-server, implements three steganography endpoints
-- **algorithms.py**: Base class `AlgorithmBase` with implementations `LSBAlgorithm` and `DCTAlgorithm`
-- **encryption.py**: `EncryptionHandler` class for hybrid RSA-2048 + AES-256 encryption
-- **image.py**: `Image` class with factory methods `lsb()` and `dct()`, handles encoding/decoding operations
-- **models.py**: Pydantic models for configuration (`SteganographerServerConfig`) and API contracts
 
 ### Installing Dependencies
 
 This repository is managed using the `uv` Python project manager: https://docs.astral.sh/uv/
-
-To install `uv`:
-
-```sh
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex" # Windows
-```
 
 Install the required dependencies:
 
@@ -115,12 +102,6 @@ curl -k https://localhost:443/api/health
 
 # Login endpoint (requires authentication)
 curl -k -H "X-API-Key: your-token-here" https://localhost:443/api/login
-
-# Encode a message into an image
-curl -k -H "X-API-Key: your-token-here" \
-  -H "Content-Type: application/json" \
-  -d '{"image_data":"base64_encoded_image","output_format":"png","message":"Secret","algorithm":"lsb"}' \
-  https://localhost:443/api/image/encode
 ```
 
 See the [API Documentation](./API.md) for detailed endpoint specifications.

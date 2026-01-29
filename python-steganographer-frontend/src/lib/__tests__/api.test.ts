@@ -52,7 +52,6 @@ describe("API Tests", () => {
   describe("health", () => {
     it("should fetch health status successfully", async () => {
       const mockHealth: HealthResponse = {
-        code: 200,
         message: "Server is healthy",
         timestamp: "2023-01-01T00:00:00Z",
         status: "healthy",
@@ -86,7 +85,6 @@ describe("API Tests", () => {
   describe("login", () => {
     it("should successfully login with valid API key", async () => {
       const mockResponse: LoginResponse = {
-        code: 200,
         message: "Login successful.",
         timestamp: "2023-01-01T00:00:00Z",
       };
@@ -147,7 +145,6 @@ describe("API Tests", () => {
 
     it("should successfully encode an image", async () => {
       const mockResponse: EncodeResponse = {
-        code: 200,
         message: "Image encoded successfully",
         timestamp: "2023-01-01T00:00:00Z",
         imageData: "encodedbase64image",
@@ -168,7 +165,6 @@ describe("API Tests", () => {
       };
 
       const mockResponse: EncodeResponse = {
-        code: 200,
         message: "Image encoded successfully",
         timestamp: "2023-01-01T00:00:00Z",
         imageData: "encodedbase64image",
@@ -212,7 +208,6 @@ describe("API Tests", () => {
 
     it("should successfully decode an image", async () => {
       const mockResponse: DecodeResponse = {
-        code: 200,
         message: "Image decoded successfully",
         timestamp: "2023-01-01T00:00:00Z",
         decodedMessage: "Secret message",
@@ -233,7 +228,6 @@ describe("API Tests", () => {
       };
 
       const mockResponse: DecodeResponse = {
-        code: 200,
         message: "Image decoded successfully",
         timestamp: "2023-01-01T00:00:00Z",
         decodedMessage: "Hidden message",
@@ -249,7 +243,6 @@ describe("API Tests", () => {
 
     it("should return empty message when no message found", async () => {
       const mockResponse: DecodeResponse = {
-        code: 200,
         message: "Image decoded successfully",
         timestamp: "2023-01-01T00:00:00Z",
         decodedMessage: "",
@@ -293,7 +286,6 @@ describe("API Tests", () => {
 
     it("should successfully get image capacity", async () => {
       const mockResponse: CapacityResponse = {
-        code: 200,
         message: "Capacity calculated successfully",
         timestamp: "2023-01-01T00:00:00Z",
         capacityCharacters: 1000,
@@ -314,7 +306,6 @@ describe("API Tests", () => {
       };
 
       const mockResponse: CapacityResponse = {
-        code: 200,
         message: "Capacity calculated successfully",
         timestamp: "2023-01-01T00:00:00Z",
         capacityCharacters: 100,
@@ -344,7 +335,6 @@ describe("API Tests", () => {
 
     it("should return capacity greater than 0 for valid images", async () => {
       const mockResponse: CapacityResponse = {
-        code: 200,
         message: "Capacity calculated successfully",
         timestamp: "2023-01-01T00:00:00Z",
         capacityCharacters: 500,

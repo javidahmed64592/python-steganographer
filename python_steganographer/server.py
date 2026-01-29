@@ -4,7 +4,7 @@ import base64
 import logging
 from typing import Any
 
-from fastapi import Request
+from fastapi import HTTPException, Request
 from python_template_server.models import ResponseCode
 from python_template_server.template_server import TemplateServer
 
@@ -109,19 +109,13 @@ class SteganographerServer(TemplateServer):
             encoded_image_b64 = base64.b64encode(encoded_image_bytes).decode("utf-8")
 
             return PostEncodeResponse(
-                code=ResponseCode.OK,
                 message="Image encoded successfully",
                 timestamp=PostEncodeResponse.current_timestamp(),
                 image_data=encoded_image_b64,
             )
-        except Exception:
+        except Exception as e:
             logger.exception("Failed to encode image")
-            return PostEncodeResponse(
-                code=ResponseCode.INTERNAL_SERVER_ERROR,
-                message="Failed to encode image",
-                timestamp=PostEncodeResponse.current_timestamp(),
-                image_data="",
-            )
+            raise HTTPException(status_code=ResponseCode.INTERNAL_SERVER_ERROR, detail="Failed to encode image") from e
 
     async def post_decode(self, request: Request) -> PostDecodeResponse:
         """Handle image decode requests - extract a message from an image.
@@ -139,19 +133,13 @@ class SteganographerServer(TemplateServer):
             decoded_message = image.decode(iv_size=self.config.steganography.iv_size)
 
             return PostDecodeResponse(
-                code=ResponseCode.OK,
                 message="Image decoded successfully",
                 timestamp=PostDecodeResponse.current_timestamp(),
                 decoded_message=decoded_message,
             )
-        except Exception:
+        except Exception as e:
             logger.exception("Failed to decode image")
-            return PostDecodeResponse(
-                code=ResponseCode.INTERNAL_SERVER_ERROR,
-                message="Failed to decode image",
-                timestamp=PostDecodeResponse.current_timestamp(),
-                decoded_message="",
-            )
+            raise HTTPException(status_code=ResponseCode.INTERNAL_SERVER_ERROR, detail="Failed to decode image") from e
 
     async def post_capacity(self, request: Request) -> PostCapacityResponse:
         """Handle capacity check requests - calculate steganography capacity of an image.
@@ -169,16 +157,12 @@ class SteganographerServer(TemplateServer):
             capacity_characters = image.get_capacity()
 
             return PostCapacityResponse(
-                code=ResponseCode.OK,
                 message="Capacity calculated successfully",
                 timestamp=PostCapacityResponse.current_timestamp(),
                 capacity_characters=capacity_characters,
             )
-        except Exception:
+        except Exception as e:
             logger.exception("Failed to calculate capacity")
-            return PostCapacityResponse(
-                code=ResponseCode.INTERNAL_SERVER_ERROR,
-                message="Failed to calculate capacity",
-                timestamp=PostCapacityResponse.current_timestamp(),
-                capacity_characters=0,
-            )
+            raise HTTPException(
+                status_code=ResponseCode.INTERNAL_SERVER_ERROR, detail="Failed to calculate capacity"
+            ) from e

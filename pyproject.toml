@@ -41,8 +41,6 @@ include = [
   "python_steganographer/**",
   "static/**",
   ".here",
-  "LICENSE",
-  "README.md",
 ]
 
 [tool.hatch.build.force-include]

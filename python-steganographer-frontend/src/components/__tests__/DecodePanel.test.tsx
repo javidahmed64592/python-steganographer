@@ -36,7 +36,6 @@ describe("DecodePanel", () => {
 
   it("successfully decodes message", async () => {
     mockDecodeImage.mockResolvedValue({
-      code: 200,
       message: "Success",
       timestamp: "2026-01-01T12:00:00Z",
       decodedMessage: "Hidden secret message",
@@ -91,7 +90,6 @@ describe("DecodePanel", () => {
 
   it("displays message when no message found", async () => {
     mockDecodeImage.mockResolvedValue({
-      code: 200,
       message: "Success",
       timestamp: "2026-01-01T12:00:00Z",
       decodedMessage: "",
@@ -109,7 +107,6 @@ describe("DecodePanel", () => {
 
   it("copies message to clipboard when copy button is clicked", async () => {
     mockDecodeImage.mockResolvedValue({
-      code: 200,
       message: "Success",
       timestamp: "2026-01-01T12:00:00Z",
       decodedMessage: "Hidden secret message",
@@ -138,7 +135,6 @@ describe("DecodePanel", () => {
     expect(screen.queryByText("Copy to Clipboard")).not.toBeInTheDocument();
 
     mockDecodeImage.mockResolvedValue({
-      code: 200,
       message: "Success",
       timestamp: "2026-01-01T12:00:00Z",
       decodedMessage: "Test message",
@@ -154,7 +150,6 @@ describe("DecodePanel", () => {
 
   it("uses selected algorithm for decoding", async () => {
     mockDecodeImage.mockResolvedValue({
-      code: 200,
       message: "Success",
       timestamp: "2026-01-01T12:00:00Z",
       decodedMessage: "Test",
@@ -198,7 +193,6 @@ describe("DecodePanel", () => {
 
   it("has proper styling for decoded message", async () => {
     mockDecodeImage.mockResolvedValue({
-      code: 200,
       message: "Success",
       timestamp: "2026-01-01T12:00:00Z",
       decodedMessage: "Secret",
@@ -217,7 +211,6 @@ describe("DecodePanel", () => {
 
   it("clears previous message when decoding again", async () => {
     mockDecodeImage.mockResolvedValueOnce({
-      code: 200,
       message: "Success",
       timestamp: "2026-01-01T12:00:00Z",
       decodedMessage: "First message",
@@ -233,7 +226,6 @@ describe("DecodePanel", () => {
     });
 
     mockDecodeImage.mockResolvedValueOnce({
-      code: 200,
       message: "Success",
       timestamp: "2026-01-01T12:00:00Z",
       decodedMessage: "Second message",

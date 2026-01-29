@@ -81,10 +81,10 @@ docker compose down              # Stop and remove containers
 - **Stage 1 (builder)**: Uses Python 3.13-slim base, installs Git and `uv`, copies source files, builds wheel with `uv build --wheel`
 - **Stage 2 (runtime)**: Python 3.13-slim base, installs Git and `uv`, installs wheel with `uv pip install --system`, copies configuration files
 - **Runtime Files**: Copies `.here`, `LICENSE`, `README.md` from installed wheel site-packages to `/app` directory
-- **Startup Script**: `/app/start.sh` generates API token if `API_TOKEN_HASH` env var is missing, then starts server with `--port $PORT`
+- **Startup Script**: `/app/start.sh` generates API token if `API_TOKEN_HASH` env var is missing, then starts server
 - **Directories**: Creates `/app/logs` for log storage, `/app/configuration` for config files
 - **Volumes**: Uses named volumes for `certs` and `logs` persistence across container restarts
-- **Environment Variables**: `API_TOKEN_HASH` (optional, generated if missing), `PORT` (defaults to 443)
+- **Environment Variables**: `HOST` (defaults to 0.0.0.0), `PORT` (defaults to 443), `API_TOKEN_HASH` (optional, generated if missing)
 - **Health Check**: Python script curls `/api/health` with unverified SSL context, 30s interval, 10s timeout, 3 retries, 10s start period
 - **Container**: Runs as root user (no user switching implemented)
 

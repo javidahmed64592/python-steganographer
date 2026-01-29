@@ -11,9 +11,6 @@ on:
 
 env:
   PACKAGE_NAME: python_steganographer
-  INSTALLER_NAME: install_steganographer.sh
-  SERVICE_NAME: python-steganographer.service
-  UNINSTALLER_NAME: uninstall_steganographer.sh
   CONTAINER_NAME: python-steganographer
 
 jobs:
@@ -25,6 +22,7 @@ jobs:
 
       - name: Build and start services with docker compose
         run: |
+          mv .env.example .env
           docker compose up --build -d
           sleep 5  # Wait for services to start
 
@@ -40,6 +38,7 @@ jobs:
 
   prepare-release:
     runs-on: ubuntu-latest
+    needs: [build-docker]
 
     steps:
       - uses: actions/checkout@v4
@@ -54,10 +53,8 @@ jobs:
       - name: Prepare release directory
         run: |
           PACKAGE_DIR="${{ steps.get_package_info.outputs.package_dir }}"
-          cp docker-compose.yml release/
-          cp README.md release/
-          chmod +x release/${{ env.INSTALLER_NAME }}
-          mv release $PACKAGE_DIR
+          mkdir $PACKAGE_DIR
+          cp docker-compose.yml README.md LICENSE .env.example $PACKAGE_DIR/
           tree $PACKAGE_DIR --dirsfirst -F
 
       - name: Create release tarball
@@ -70,99 +67,15 @@ jobs:
         with:
           name: ${{ env.PACKAGE_NAME }}_release
           path: ${{ steps.get_package_info.outputs.package_dir }}.tar.gz
-  check-installer:
-    runs-on: ubuntu-latest
-    needs: prepare-release
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-python-core
 
-      - name: Download artifact from prepare-release job
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.PACKAGE_NAME }}_release
-
-      - name: Extract release tarball
-        run: |
-          TAR_FILE=$(find . -name '${{ env.PACKAGE_NAME }}_*.tar.gz')
-          tar -xzf $TAR_FILE
-
-      - name: Verify pre-installation directory contents
-        run: |
-          TAR_FILE=$(find . -name '${{ env.PACKAGE_NAME }}_*.tar.gz')
-          DIR_NAME=$(basename "$TAR_FILE" .tar.gz)
-          PACKAGE_NAME="${{ env.PACKAGE_NAME }}"
-
-          cd "$DIR_NAME"
-          echo "$DIR_NAME/"
-          tree --dirsfirst -F
-
-          files=("docker-compose.yml" "README.md")
-          scripts=("${{ env.INSTALLER_NAME }}")
-
-          for file in "${files[@]}"; do
-            if [ ! -f "$file" ]; then
-              echo "File $file not found"
-              exit 1
-            fi
-          done
-
-          for script in "${scripts[@]}"; do
-            if [ ! -f "$script" ]; then
-              echo "Script $script not found"
-              exit 1
-            fi
-            if [ ! -x "$script" ]; then
-              echo "Script $script is not executable"
-              exit 1
-            fi
-          done
-
-      - name: Run installer script
-        run: |
-          TAR_FILE=$(find . -name '${{ env.PACKAGE_NAME }}_*.tar.gz')
-          DIR_NAME=$(basename "$TAR_FILE" .tar.gz)
-
-          cd "$DIR_NAME"
-          ./${{ env.INSTALLER_NAME }}
-
-      - name: Verify post-installation directory contents
-        run: |
-          TAR_FILE=$(find . -name '${{ env.PACKAGE_NAME }}_*.tar.gz')
-          DIR_NAME=$(basename "$TAR_FILE" .tar.gz)
-
-          cd "$DIR_NAME"
-          echo "$DIR_NAME/"
-          tree --dirsfirst -F
-
-          if [ -f "${{ env.INSTALLER_NAME }}" ]; then
-            echo "Installer script not removed"
-            exit 1
-          fi
-
-          files=("docker-compose.yml" "README.md" "${{ env.SERVICE_NAME }}" "start_service.sh" "stop_service.sh" "${{ env.UNINSTALLER_NAME }}")
-          scripts=("start_service.sh" "stop_service.sh" "${{ env.UNINSTALLER_NAME }}")
-
-          for file in "${files[@]}"; do
-            if [ ! -f "$file" ]; then
-              echo "File $file not found"
-              exit 1
-            fi
-          done
-
-          for script in "${scripts[@]}"; do
-            if [ ! -x "$script" ]; then
-              echo "Script $script is not executable"
-              exit 1
-            fi
-          done
   publish-release:
     runs-on: ubuntu-latest
-    needs: [build-docker, check-installer]
+    needs: [prepare-release]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: write
       packages: write
+
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-python-dev
@@ -233,17 +146,18 @@ jobs:
           cat > release_notes.md << 'EOF'
           ## Python Steganographer v${{ steps.get_version.outputs.version }}
 
-          **FastAPI steganography server with hybrid encryption (RSA-2048 + AES-256). Hide encrypted messages in images using LSB or DCT algorithms.**
+          **FastAPI steganography server with hybrid encryption. Hide encrypted messages in images using LSB or DCT algorithms.**
 
           ### Quick Start
 
           ```bash
           # Download and extract
+          wget https://github.com/javidahmed64592/${{ env.CONTAINER_NAME }}/releases/download/v${{ steps.get_version.outputs.version }}/${{ env.PACKAGE_NAME }}_${{ steps.get_version.outputs.version }}.tar.gz
           tar -xzf ${{ env.PACKAGE_NAME }}_${{ steps.get_version.outputs.version }}.tar.gz
           cd ${{ env.PACKAGE_NAME }}_${{ steps.get_version.outputs.version }}
 
-          # Install as systemd service
-          ./${{ env.INSTALLER_NAME }}
+          # Run the container using Docker Compose
+          docker compose up -d
           ```
 
           ### Access Points
@@ -265,7 +179,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.get_version.outputs.tag }}
-          name: "Python Steganographer ${{ steps.get_version.outputs.version }}"
+          name: "${{ env.CONTAINER_NAME }} ${{ steps.get_version.outputs.version }}"
           body_path: ${{ steps.release_notes.outputs.release_notes_file }}
           draft: false
           prerelease: false

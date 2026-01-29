@@ -115,7 +115,7 @@ docker compose down              # Stop and remove containers
 
 - **Prefix**: All routes under `/api` (inherited from TemplateServer)
 - **Authentication**: Applied via `add_authenticated_route()` method (includes rate limiting)
-- **Response Models**: All endpoints return `BaseResponse` subclasses with code/message/timestamp
+- **Response Models**: All endpoints return `BaseResponse` subclasses with message/timestamp
 - **Error Handling**: Try/except blocks in endpoints return 500 with empty data on failure
 - **Base64 I/O**: All image data transmitted as base64 strings in JSON
 

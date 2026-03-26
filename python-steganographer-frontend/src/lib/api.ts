@@ -202,14 +202,8 @@ export function useHealthStatus(): HealthStatus {
 
     const checkHealth = async () => {
       try {
-        const data = await getHealth();
-        if (isMounted) {
-          if (data.status === "healthy") {
-            setStatus("online");
-          } else {
-            setStatus("offline");
-          }
-        }
+        await getHealth();
+        setStatus("online");
       } catch {
         if (isMounted) {
           setStatus("offline");

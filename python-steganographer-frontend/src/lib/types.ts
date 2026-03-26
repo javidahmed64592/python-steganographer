@@ -23,9 +23,7 @@ export enum AlgorithmType {
 }
 
 // Response types
-export interface HealthResponse extends BaseResponse {
-  status: string;
-}
+export interface HealthResponse extends BaseResponse {}
 
 export interface EncodeResponse extends BaseResponse {
   imageData: string; // Base64 encoded image

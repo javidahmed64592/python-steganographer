@@ -33,7 +33,7 @@ class SteganographerServer(TemplateServer):
         """
         self.config: SteganographerServerConfig
         super().__init__(
-            package_name="python_steganographer",
+            package_name="python-steganographer",
             config=config,
         )
 

@@ -26,9 +26,13 @@ dependencies = [
 dev = [
     "python-template-server[dev] @ git+https://github.com/javidahmed64592/python-template-server.git",
 ]
+docs = [
+    "python-template-server[docs] @ git+https://github.com/javidahmed64592/python-template-server.git",
+]
 
 [project.urls]
 repository = "https://github.com/javidahmed64592/python-steganographer"
+documentation = "https://javidahmed64592.github.io/python-steganographer"
 
 [project.scripts]
 python-steganographer = "python_steganographer.main:run"
@@ -167,5 +171,6 @@ pretty = true
 module = [
     "python_template_server.*",
     "scipy.*",
+    "template_python.*",
 ]
 ignore_missing_imports = true

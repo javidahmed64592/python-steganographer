@@ -1,7 +1,9 @@
-[![python](https://img.shields.io/badge/Python-3.13-3776AB.svg?style=flat&logo=python&logoColor=ffd343)](https://docs.python.org/3.13/)
+[![Python](https://img.shields.io/badge/Python-3.13-3776AB?style=flat-square&logo=python&logoColor=ffd343)](https://docs.python.org/3.13/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-Latest-009688?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![CI](https://img.shields.io/github/actions/workflow/status/javidahmed64592/python-steganographer/ci.yml?branch=main&style=flat-square&label=CI&logo=github)](https://github.com/javidahmed64592/python-steganographer/actions/workflows/ci.yml)
 [![Build](https://img.shields.io/github/actions/workflow/status/javidahmed64592/python-steganographer/build.yml?branch=main&style=flat-square&label=Build&logo=github)](https://github.com/javidahmed64592/python-steganographer/actions/workflows/build.yml)
+[![Docs](https://img.shields.io/github/actions/workflow/status/javidahmed64592/python-steganographer/docs.yml?branch=main&style=flat-square&label=Docs&logo=github)](https://github.com/javidahmed64592/python-steganographer/actions/workflows/docs.yml)
 [![Docker](https://img.shields.io/github/actions/workflow/status/javidahmed64592/python-steganographer/docker.yml?branch=main&style=flat-square&label=Docker&logo=github)](https://github.com/javidahmed64592/python-steganographer/actions/workflows/docker.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -20,8 +22,6 @@ Hide encrypted messages in images using LSB or DCT algorithms with comprehensive
   - [Installation](#installation)
   - [Configuration](#configuration)
   - [Managing the Container](#managing-the-container)
-- [Links](#links)
-- [Documentation](#documentation)
 - [License](#license)
 
 ## Features
@@ -78,26 +78,13 @@ docker compose down
 docker compose pull && docker compose up -d
 
 # View the logs
-docker compose logs -f pi-dashboard
+docker compose logs -f python-steganographer
 ```
 
 **Note:** You may need to add your user to the Docker group and log out/in for permission changes to take effect:
 ```sh
 sudo usermod -aG docker ${USER}
 ```
-
-## Links
-
-- Access the web application: https://localhost:443
-- Server runs at: https://localhost:443/api
-- Swagger UI: https://localhost:443/api/docs
-- Redoc: https://localhost:443/api/redoc
-
-## Documentation
-
-- **[API Documentation](./docs/API.md)**: API architecture and endpoints
-- **[Software Maintenance Guide](./docs/SMG.md)**: Development setup, configuration
-- **[Workflows](./docs/WORKFLOWS.md)**: CI/CD pipeline details
 
 ## License
 

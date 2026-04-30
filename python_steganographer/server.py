@@ -47,23 +47,29 @@ class SteganographerServer(TemplateServer):
 
     def setup_routes(self) -> None:
         """Set up API routes."""
-        self.add_authenticated_route(
+        self.add_route(
             endpoint="/image/encode",
             handler_function=self.post_encode,
             response_model=PostEncodeResponse,
             methods=["POST"],
+            limited=True,
+            authentication_required=True,
         )
-        self.add_authenticated_route(
+        self.add_route(
             endpoint="/image/decode",
             handler_function=self.post_decode,
             response_model=PostDecodeResponse,
             methods=["POST"],
+            limited=True,
+            authentication_required=True,
         )
-        self.add_authenticated_route(
+        self.add_route(
             endpoint="/image/capacity",
             handler_function=self.post_capacity,
             response_model=PostCapacityResponse,
             methods=["POST"],
+            limited=True,
+            authentication_required=True,
         )
         super().setup_routes()
 

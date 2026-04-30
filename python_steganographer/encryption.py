@@ -5,10 +5,11 @@ from __future__ import annotations
 import os
 
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.decrepit.ciphers import modes
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey, RSAPublicKey
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms
 
 
 class EncryptionHandler:

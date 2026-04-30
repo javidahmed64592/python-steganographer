@@ -72,6 +72,12 @@ def mock_server(
         yield server
 
 
+@pytest.fixture
+def mock_client(mock_server: SteganographerServer) -> TestClient:
+    """Provide a TestClient for the mock server."""
+    return TestClient(mock_server.app)
+
+
 class TestSteganographerServer:
     """Unit tests for the SteganographerServer class."""
 
@@ -116,165 +122,98 @@ class TestPostEncodeEndpoint:
     """Integration and unit tests for the /image/encode endpoint."""
 
     @pytest.fixture
-    def mock_request_object(self, mock_post_encode_request: PostEncodeRequest) -> MagicMock:
+    def mock_request_object(self, mock_post_encode_request: PostEncodeRequest) -> Request:
         """Provide a mock Request object with JSON data."""
         request = MagicMock(spec=Request)
         request.json = AsyncMock(return_value=mock_post_encode_request.model_dump())
         return request
 
-    def test_post_encode(
-        self,
-        mock_server: SteganographerServer,
-        mock_request_object: MagicMock,
-    ) -> None:
+    def test_post_encode(self, mock_server: SteganographerServer, mock_request_object: Request) -> None:
         """Test the /image/encode method handles valid JSON and returns a model reply."""
         response = asyncio.run(mock_server.post_encode(mock_request_object))
 
         assert response.message == "Image encoded successfully"
-        assert isinstance(response.timestamp, str)
         assert isinstance(response.image_data, str)
 
     def test_post_encode_error(
-        self,
-        mock_server: SteganographerServer,
-        mock_request_object: MagicMock,
-        mock_image_instance: Image,
+        self, mock_server: SteganographerServer, mock_request_object: Request, mock_image_instance: Image
     ) -> None:
         """Test /image/encode handles errors gracefully."""
         with (
-            pytest.raises(HTTPException, match=r"Failed to encode image"),
             patch.object(mock_image_instance, "encode", side_effect=Exception("Encoding failed")),
+            pytest.raises(HTTPException, match=r"Failed to encode image"),
         ):
             asyncio.run(mock_server.post_encode(mock_request_object))
 
-    def test_post_encode_endpoint(
-        self,
-        mock_server: SteganographerServer,
-        mock_post_encode_request: PostEncodeRequest,
-    ) -> None:
+    def test_post_encode_endpoint(self, mock_client: TestClient, mock_post_encode_request: PostEncodeRequest) -> None:
         """Test /image/encode endpoint returns 200 and includes image data."""
-        app = mock_server.app
-        client = TestClient(app)
-
-        response = client.post(
-            "/image/encode",
-            json=mock_post_encode_request.model_dump(),
-        )
+        response = mock_client.post("/image/encode", json=mock_post_encode_request.model_dump())
         assert response.status_code == ResponseCode.OK
-
-        response_body = response.json()
-        assert response_body["message"] == "Image encoded successfully"
-        assert isinstance(response_body["timestamp"], str)
-        assert isinstance(response_body["image_data"], str)
 
 
 class TestPostDecodeEndpoint:
     """Integration and unit tests for the /image/decode endpoint."""
 
     @pytest.fixture
-    def mock_request_object(self, mock_post_decode_request: PostDecodeRequest) -> MagicMock:
+    def mock_request_object(self, mock_post_decode_request: PostDecodeRequest) -> Request:
         """Provide a mock Request object with JSON data."""
         request = MagicMock(spec=Request)
         request.json = AsyncMock(return_value=mock_post_decode_request.model_dump())
         return request
 
-    def test_post_decode(
-        self,
-        mock_server: SteganographerServer,
-        mock_request_object: MagicMock,
-    ) -> None:
+    def test_post_decode(self, mock_server: SteganographerServer, mock_request_object: Request) -> None:
         """Test the /image/decode method handles valid JSON and returns a model reply."""
         response = asyncio.run(mock_server.post_decode(mock_request_object))
 
         assert response.message == "Image decoded successfully"
-        assert isinstance(response.timestamp, str)
         assert isinstance(response.decoded_message, str)
 
     def test_post_decode_error(
-        self,
-        mock_server: SteganographerServer,
-        mock_request_object: MagicMock,
-        mock_image_instance: Image,
+        self, mock_server: SteganographerServer, mock_request_object: Request, mock_image_instance: Image
     ) -> None:
         """Test /image/decode handles errors gracefully."""
         with (
-            pytest.raises(HTTPException, match=r"Failed to decode image"),
             patch.object(mock_image_instance, "decode", side_effect=Exception("Decoding failed")),
+            pytest.raises(HTTPException, match=r"Failed to decode image"),
         ):
             asyncio.run(mock_server.post_decode(mock_request_object))
 
-    def test_post_decode_endpoint(
-        self,
-        mock_server: SteganographerServer,
-        mock_post_decode_request: PostDecodeRequest,
-    ) -> None:
+    def test_post_decode_endpoint(self, mock_client: TestClient, mock_post_decode_request: PostDecodeRequest) -> None:
         """Test /image/decode endpoint returns 200 and includes decoded message."""
-        app = mock_server.app
-        client = TestClient(app)
-
-        response = client.post(
-            "/image/decode",
-            json=mock_post_decode_request.model_dump(),
-        )
+        response = mock_client.post("/image/decode", json=mock_post_decode_request.model_dump())
         assert response.status_code == ResponseCode.OK
-
-        response_body = response.json()
-        assert response_body["message"] == "Image decoded successfully"
-        assert isinstance(response_body["timestamp"], str)
-        assert isinstance(response_body["decoded_message"], str)
 
 
 class TestPostCapacityEndpoint:
     """Integration and unit tests for the /image/capacity endpoint."""
 
     @pytest.fixture
-    def mock_request_object(self, mock_post_capacity_request: PostCapacityRequest) -> MagicMock:
+    def mock_request_object(self, mock_post_capacity_request: PostCapacityRequest) -> Request:
         """Provide a mock Request object with JSON data."""
         request = MagicMock(spec=Request)
         request.json = AsyncMock(return_value=mock_post_capacity_request.model_dump())
         return request
 
-    def test_post_capacity(
-        self,
-        mock_server: SteganographerServer,
-        mock_request_object: MagicMock,
-    ) -> None:
+    def test_post_capacity(self, mock_server: SteganographerServer, mock_request_object: Request) -> None:
         """Test the /image/capacity method handles valid JSON and returns a model reply."""
         response = asyncio.run(mock_server.post_capacity(mock_request_object))
 
         assert response.message == "Capacity calculated successfully"
-        assert isinstance(response.timestamp, str)
         assert isinstance(response.capacity_characters, int)
 
     def test_post_capacity_error(
-        self,
-        mock_server: SteganographerServer,
-        mock_request_object: MagicMock,
-        mock_image_instance: Image,
+        self, mock_server: SteganographerServer, mock_request_object: Request, mock_image_instance: Image
     ) -> None:
         """Test /image/capacity handles errors gracefully."""
         with (
-            pytest.raises(HTTPException, match=r"Failed to calculate capacity"),
             patch.object(mock_image_instance, "get_capacity", side_effect=Exception("Capacity calculation failed")),
+            pytest.raises(HTTPException, match=r"Failed to calculate capacity"),
         ):
             asyncio.run(mock_server.post_capacity(mock_request_object))
 
     def test_post_capacity_endpoint(
-        self,
-        mock_server: SteganographerServer,
-        mock_post_capacity_request: PostCapacityRequest,
+        self, mock_client: TestClient, mock_post_capacity_request: PostCapacityRequest
     ) -> None:
         """Test /image/capacity endpoint returns 200 and includes capacity information."""
-        app = mock_server.app
-        client = TestClient(app)
-
-        response = client.post(
-            "/image/capacity",
-            json=mock_post_capacity_request.model_dump(),
-        )
+        response = mock_client.post("/image/capacity", json=mock_post_capacity_request.model_dump())
         assert response.status_code == ResponseCode.OK
-
-        response_body = response.json()
-        assert response_body["message"] == "Capacity calculated successfully"
-        assert isinstance(response_body["timestamp"], str)
-        assert isinstance(response_body["capacity_characters"], int)

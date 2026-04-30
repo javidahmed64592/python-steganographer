@@ -42,7 +42,6 @@ class SteganographerServer(TemplateServer):
 
         :param dict config_data: The configuration data to validate
         :return SteganographerServerConfig: The validated configuration model
-        :raise ValidationError: If the configuration data is invalid
         """
         return SteganographerServerConfig.model_validate(config_data)  # type: ignore[no-any-return]
 
@@ -95,8 +94,8 @@ class SteganographerServer(TemplateServer):
             encode_request = PostEncodeRequest.model_validate(await request.json())
 
             image_bytes = base64.b64decode(encode_request.image_data)
-            image = self._get_image_instance_from_algorithm(encode_request.algorithm)
-            image.load_image(image_bytes)
+            image = self._get_image_instance_from_algorithm(algorithm=encode_request.algorithm)
+            image.load_image(image_bytes=image_bytes)
 
             image.encode(
                 msg=encode_request.message,
@@ -110,12 +109,12 @@ class SteganographerServer(TemplateServer):
 
             return PostEncodeResponse(
                 message="Image encoded successfully",
-                timestamp=PostEncodeResponse.current_timestamp(),
                 image_data=encoded_image_b64,
             )
         except Exception as e:
-            logger.exception("Failed to encode image")
-            raise HTTPException(status_code=ResponseCode.INTERNAL_SERVER_ERROR, detail="Failed to encode image") from e
+            error_msg = "Failed to encode image"
+            logger.exception(error_msg)
+            raise HTTPException(status_code=ResponseCode.INTERNAL_SERVER_ERROR, detail=error_msg) from e
 
     async def post_decode(self, request: Request) -> PostDecodeResponse:
         """Handle image decode requests - extract a message from an image.
@@ -127,19 +126,19 @@ class SteganographerServer(TemplateServer):
             decode_request = PostDecodeRequest.model_validate(await request.json())
 
             image_bytes = base64.b64decode(decode_request.image_data)
-            image = self._get_image_instance_from_algorithm(decode_request.algorithm)
-            image.load_image(image_bytes)
+            image = self._get_image_instance_from_algorithm(algorithm=decode_request.algorithm)
+            image.load_image(image_bytes=image_bytes)
 
             decoded_message = image.decode(iv_size=self.config.steganography.iv_size)
 
             return PostDecodeResponse(
                 message="Image decoded successfully",
-                timestamp=PostDecodeResponse.current_timestamp(),
                 decoded_message=decoded_message,
             )
         except Exception as e:
-            logger.exception("Failed to decode image")
-            raise HTTPException(status_code=ResponseCode.INTERNAL_SERVER_ERROR, detail="Failed to decode image") from e
+            error_msg = "Failed to decode image"
+            logger.exception(error_msg)
+            raise HTTPException(status_code=ResponseCode.INTERNAL_SERVER_ERROR, detail=error_msg) from e
 
     async def post_capacity(self, request: Request) -> PostCapacityResponse:
         """Handle capacity check requests - calculate steganography capacity of an image.
@@ -151,18 +150,16 @@ class SteganographerServer(TemplateServer):
             capacity_request = PostCapacityRequest.model_validate(await request.json())
 
             image_bytes = base64.b64decode(capacity_request.image_data)
-            image = self._get_image_instance_from_algorithm(capacity_request.algorithm)
-            image.load_image(image_bytes)
+            image = self._get_image_instance_from_algorithm(algorithm=capacity_request.algorithm)
+            image.load_image(image_bytes=image_bytes)
 
             capacity_characters = image.get_capacity()
 
             return PostCapacityResponse(
                 message="Capacity calculated successfully",
-                timestamp=PostCapacityResponse.current_timestamp(),
                 capacity_characters=capacity_characters,
             )
         except Exception as e:
-            logger.exception("Failed to calculate capacity")
-            raise HTTPException(
-                status_code=ResponseCode.INTERNAL_SERVER_ERROR, detail="Failed to calculate capacity"
-            ) from e
+            error_msg = "Failed to calculate capacity"
+            logger.exception(error_msg)
+            raise HTTPException(status_code=ResponseCode.INTERNAL_SERVER_ERROR, detail=error_msg) from e

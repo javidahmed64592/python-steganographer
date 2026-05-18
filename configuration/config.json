@@ -29,10 +29,12 @@
     "indent": null,
     "media_type": "application/json; charset=utf-8"
   },
-  "steganography": {
+  "image": {
     "dct_block_size": 8,
     "dct_coefficient": 3,
-    "dct_quantization_factor": 10,
+    "dct_quantization_factor": 10
+  },
+  "encryption": {
     "private_key_size": 2048,
     "iv_size": 16,
     "aes_key_size": 32

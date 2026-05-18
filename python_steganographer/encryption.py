@@ -1,4 +1,4 @@
-"""Encryption methods for the steganography application."""
+"""Encryption methods for the steganography server."""
 
 from __future__ import annotations
 

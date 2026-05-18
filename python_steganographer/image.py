@@ -1,4 +1,4 @@
-"""Image classes for the steganographer application."""
+"""Image classes for the steganographer server."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import numpy as np
 import skimage
 from numpy.typing import NDArray
 
-from python_steganographer.algorithms import AlgorithmBase, DCTAlgorithm, LSBAlgorithm
+from python_steganographer.algorithm import AlgorithmBase, DCTAlgorithm, LSBAlgorithm
 from python_steganographer.encryption import EncryptionHandler
 from python_steganographer.helpers import bytes_to_str, str_to_bytes
 

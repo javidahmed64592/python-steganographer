@@ -1,4 +1,4 @@
-"""Constants for the steganographer application."""
+"""Constants for the steganographer server."""
 
 import numpy as np
 

@@ -9,7 +9,7 @@ import pytest
 from numpy.typing import NDArray
 from slowapi import Limiter
 
-from python_steganographer.algorithms import DCTAlgorithm, LSBAlgorithm
+from python_steganographer.algorithm import DCTAlgorithm, LSBAlgorithm
 from python_steganographer.image import Image
 from python_steganographer.models import (
     AlgorithmType,

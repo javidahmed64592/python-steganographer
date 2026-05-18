@@ -6,9 +6,7 @@ import numpy as np
 from numpy.typing import NDArray
 from scipy.fft import dct, idct
 
-from python_steganographer.constants import (
-    NUM_BITS,
-)
+from python_steganographer.constants import NUM_BITS
 from python_steganographer.helpers import bytes_list_to_msg, msg_to_bytes_list
 
 

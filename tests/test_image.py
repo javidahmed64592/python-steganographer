@@ -1,7 +1,7 @@
 """Unit tests for the python_steganographer.image module."""
 
 from python_steganographer.image import Image
-from python_steganographer.models import SteganographerServerConfig
+from python_steganographer.models import EncryptionConfig
 
 MOCK_MSG = "Test"
 
@@ -20,17 +20,17 @@ class TestImage:
         self,
         mock_image_instance_lsb: Image,
         mock_image_instance_dct: Image,
-        mock_steganographer_server_config: SteganographerServerConfig,
+        mock_encryption_config: EncryptionConfig,
     ) -> None:
         """Test encoding and decoding a message in an image."""
         for image_instance in [mock_image_instance_lsb, mock_image_instance_dct]:
             image_instance.encode(
                 msg=MOCK_MSG,
-                private_key_size=mock_steganographer_server_config.steganography.private_key_size,
-                iv_size=mock_steganographer_server_config.steganography.iv_size,
-                aes_key_size=mock_steganographer_server_config.steganography.aes_key_size,
+                private_key_size=mock_encryption_config.private_key_size,
+                iv_size=mock_encryption_config.iv_size,
+                aes_key_size=mock_encryption_config.aes_key_size,
             )
-            assert image_instance.decode(iv_size=mock_steganographer_server_config.steganography.iv_size) == MOCK_MSG
+            assert image_instance.decode(iv_size=mock_encryption_config.iv_size) == MOCK_MSG
 
     def test_get_capacity(self, mock_image_instance_lsb: Image, mock_image_instance_dct: Image) -> None:
         """Test calculating the steganography capacity of an image."""

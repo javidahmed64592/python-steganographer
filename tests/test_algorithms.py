@@ -6,7 +6,7 @@ from numpy.typing import NDArray
 
 from python_steganographer.algorithms import DCTAlgorithm, LSBAlgorithm
 from python_steganographer.constants import NUM_BITS
-from python_steganographer.models import SteganographerServerConfig
+from python_steganographer.models import ImageConfig
 
 
 class TestLSBHelperFunctions:
@@ -271,67 +271,61 @@ class TestDCTHelperFunctions:
 class TestDCTAlgorithm:
     """Test the DCTAlgorithm class."""
 
-    def test_initialization_invalid_block_size(
-        self, mock_steganographer_server_config: SteganographerServerConfig
-    ) -> None:
+    def test_initialization_invalid_block_size(self, mock_image_config: ImageConfig) -> None:
         """Test that invalid block size raises ValueError."""
         # Block size must be positive power of 2
         with pytest.raises(ValueError, match="block_size must be a positive power of 2"):
             DCTAlgorithm(
                 block_size=0,
-                dct_coefficient=mock_steganographer_server_config.steganography.dct_coefficient,
-                quantization_factor=mock_steganographer_server_config.steganography.dct_quantization_factor,
+                dct_coefficient=mock_image_config.dct_coefficient,
+                quantization_factor=mock_image_config.dct_quantization_factor,
             )
 
         with pytest.raises(ValueError, match="block_size must be a positive power of 2"):
             DCTAlgorithm(
                 block_size=7,
-                dct_coefficient=mock_steganographer_server_config.steganography.dct_coefficient,
-                quantization_factor=mock_steganographer_server_config.steganography.dct_quantization_factor,
+                dct_coefficient=mock_image_config.dct_coefficient,
+                quantization_factor=mock_image_config.dct_quantization_factor,
             )  # Not power of 2
 
         with pytest.raises(ValueError, match="block_size must be a positive power of 2"):
             DCTAlgorithm(
                 block_size=-8,
-                dct_coefficient=mock_steganographer_server_config.steganography.dct_coefficient,
-                quantization_factor=mock_steganographer_server_config.steganography.dct_quantization_factor,
+                dct_coefficient=mock_image_config.dct_coefficient,
+                quantization_factor=mock_image_config.dct_quantization_factor,
             )
 
-    def test_initialization_invalid_dct_coefficient(
-        self, mock_steganographer_server_config: SteganographerServerConfig
-    ) -> None:
+    def test_initialization_invalid_dct_coefficient(self, mock_image_config: ImageConfig) -> None:
         """Test that invalid DCT coefficient raises ValueError."""
         # DCT coefficient must be in valid range
         with pytest.raises(ValueError, match="dct_coefficient must be between"):
             DCTAlgorithm(
                 dct_coefficient=0,
-                block_size=mock_steganographer_server_config.steganography.dct_block_size,
-                quantization_factor=mock_steganographer_server_config.steganography.dct_quantization_factor,
+                block_size=mock_image_config.dct_block_size,
+                quantization_factor=mock_image_config.dct_quantization_factor,
             )  # Too low
 
         with pytest.raises(ValueError, match="dct_coefficient must be between"):
             DCTAlgorithm(
                 dct_coefficient=64,
-                block_size=mock_steganographer_server_config.steganography.dct_block_size,
-                quantization_factor=mock_steganographer_server_config.steganography.dct_quantization_factor,
+                block_size=mock_image_config.dct_block_size,
+                quantization_factor=mock_image_config.dct_quantization_factor,
             )  # Too high for 8x8 blocks
 
-    def test_initialization_invalid_quantization_factor(
-        self, mock_steganographer_server_config: SteganographerServerConfig
-    ) -> None:
+    def test_initialization_invalid_quantization_factor(self, mock_image_config: ImageConfig) -> None:
         """Test that invalid quantization factor raises ValueError."""
         with pytest.raises(ValueError, match="quantization_factor must be positive"):
             DCTAlgorithm(
                 quantization_factor=0,
-                block_size=mock_steganographer_server_config.steganography.dct_block_size,
-                dct_coefficient=mock_steganographer_server_config.steganography.dct_coefficient,
+                block_size=mock_image_config.dct_block_size,
+                dct_coefficient=mock_image_config.dct_coefficient,
             )
 
         with pytest.raises(ValueError, match="quantization_factor must be positive"):
             DCTAlgorithm(
                 quantization_factor=-5,
-                block_size=mock_steganographer_server_config.steganography.dct_block_size,
-                dct_coefficient=mock_steganographer_server_config.steganography.dct_coefficient,
+                block_size=mock_image_config.dct_block_size,
+                dct_coefficient=mock_image_config.dct_coefficient,
             )
 
     def test_embed_data_basic(self, dct_algorithm: DCTAlgorithm, mock_image_channel: NDArray[np.uint8]) -> None:

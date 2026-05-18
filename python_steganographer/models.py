@@ -7,14 +7,19 @@ from python_template_server.models import BaseResponse, TemplateServerConfig
 
 
 # Steganographer Server Configuration Models
-class SteganographyConfig(BaseModel):
-    """Configuration model for steganography settings."""
+class ImageConfig(BaseModel):
+    """Configuration model for image settings."""
 
     dct_block_size: int = Field(default=8, description="DCT block size", ge=4)
     dct_coefficient: int = Field(
         default=3, description="DCT coefficient to modify (1-indexed, avoid DC component)", ge=1
     )
     dct_quantization_factor: int = Field(default=10, description="Quantization factor for DCT coefficients", ge=1)
+
+
+class EncryptionConfig(BaseModel):
+    """Configuration model for encryption settings."""
+
     private_key_size: int = Field(default=2048, description="Size of the RSA private key in bits", ge=1024)
     iv_size: int = Field(default=16, description="Size of the AES initialization vector in bytes", ge=8)
     aes_key_size: int = Field(default=32, description="Size of the AES key in bytes", ge=16)
@@ -23,9 +28,8 @@ class SteganographyConfig(BaseModel):
 class SteganographerServerConfig(TemplateServerConfig):
     """Configuration model for the Steganographer Server."""
 
-    steganography: SteganographyConfig = Field(
-        default_factory=SteganographyConfig, description="Steganography-related configuration settings"
-    )
+    image: ImageConfig = Field(default_factory=ImageConfig, description="Image processing configuration")
+    encryption: EncryptionConfig = Field(default_factory=EncryptionConfig, description="Encryption configuration")
 
 
 # Steganography Models

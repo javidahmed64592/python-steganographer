@@ -33,18 +33,18 @@ class EncryptionHandler:
         :param int iv_size: Size of the initialization vector
         :param int aes_key_size: Size of the AES key
         """
-        if not (private_key or private_key_size) or not (iv or iv_size) or not (aes_key or aes_key_size):
+        if not (private_key and iv and aes_key) and not (private_key_size and iv_size and aes_key_size):
             msg = "Either provide the keys or their sizes to generate new keys."
             raise ValueError(msg)
 
         self.private_key = private_key or rsa.generate_private_key(
             public_exponent=65537,
-            key_size=private_key_size,  # type: ignore[arg-type]
+            key_size=private_key_size,  # ty:ignore[invalid-argument-type]
             backend=default_backend(),
         )
         self.public_key = self.private_key.public_key()
-        self.iv = iv or os.urandom(iv_size)  # type: ignore[arg-type]
-        self.aes_key = aes_key or os.urandom(aes_key_size)  # type: ignore[arg-type]
+        self.iv = iv or os.urandom(iv_size)  # ty:ignore[invalid-argument-type]
+        self.aes_key = aes_key or os.urandom(aes_key_size)  # ty:ignore[invalid-argument-type]
 
     @staticmethod
     def private_key_to_str(private_key: RSAPrivateKey) -> str:

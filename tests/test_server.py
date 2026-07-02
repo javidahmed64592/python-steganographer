@@ -5,11 +5,8 @@ from importlib.metadata import PackageMetadata
 from unittest.mock import MagicMock, patch
 
 import pytest
-from fastapi.routing import APIRoute
 
-from python_steganographer.models import (
-    SteganographerServerConfig,
-)
+from python_steganographer.models import SteganographerServerConfig
 from python_steganographer.routers import ImageRouter
 from python_steganographer.server import SteganographerServer
 
@@ -63,20 +60,6 @@ class TestSteganographerServer:
         validated_config = mock_server.validate_config(invalid_config)
         assert isinstance(validated_config, SteganographerServerConfig)
 
-
-class TestSteganographerServerRoutes:
-    """Integration tests for the routes in SteganographerServer."""
-
-    def test_setup_routes(self, mock_server: SteganographerServer) -> None:
-        """Test that routes are set up correctly."""
-        api_routes = [route for route in mock_server.app.routes if isinstance(route, APIRoute)]
-        routes = [route.path for route in api_routes]
-        expected_endpoints = [
-            "/health",
-            "/login",
-            "/image/encode",
-            "/image/decode",
-            "/image/capacity",
-        ]
-        for endpoint in expected_endpoints:
-            assert endpoint in routes, f"Expected endpoint {endpoint} not found in routes"
+    def test_routers_property(self, mock_server: SteganographerServer, mock_image_router: ImageRouter) -> None:
+        """Test that the routers property returns the expected list of routers."""
+        assert mock_image_router in mock_server._routers

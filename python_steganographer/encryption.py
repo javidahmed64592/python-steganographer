@@ -15,7 +15,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms
 class EncryptionHandler:
     """Handler class for encryption and decryption operations."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0917
         self,
         private_key_size: int | None = None,
         iv_size: int | None = None,

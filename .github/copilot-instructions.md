@@ -56,7 +56,7 @@ uv sync                          # Install dependencies
 uv run generate-new-token        # Generate API key, save hash to .env
 
 # Development
-uv run python-steganographer     # Start server (https://localhost:443/api)
+uv run python-steganographer     # Start server (http://localhost:8000/api)
 uv run -m pytest                 # Run tests with coverage
 uv run -m ty check .             # Type checking
 uv run -m ruff check .           # Linting
@@ -84,7 +84,7 @@ docker compose down              # Stop and remove containers
 - **Startup Script**: `/app/start.sh` generates API token if `API_TOKEN_HASH` env var is missing, then starts server
 - **Directories**: Creates `/app/logs` for log storage, `/app/configuration` for config files
 - **Volumes**: Uses named volumes for `certs` and `logs` persistence across container restarts
-- **Environment Variables**: `HOST` (defaults to 0.0.0.0), `PORT` (defaults to 443), `API_TOKEN_HASH` (optional, generated if missing)
+- **Environment Variables**: `HOST` (defaults to 0.0.0.0), `PORT` (defaults to 8000), `API_TOKEN_HASH` (optional, generated if missing)
 - **Health Check**: Python script curls `/api/health` with unverified SSL context, 30s interval, 10s timeout, 3 retries, 10s start period
 - **Container**: Runs as root user (no user switching implemented)
 

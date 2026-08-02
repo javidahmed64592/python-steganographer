@@ -24,9 +24,9 @@ const getBackendURL = () => {
     return `https://${config.server.host}:${config.server.port}`;
   } catch (error) {
     console.warn(
-      "Failed to read config.json, falling back to https://localhost:443"
+      "Failed to read config.json, falling back to http://localhost:8000"
     );
-    return "https://localhost:443";
+    return "http://localhost:8000";
   }
 };
 

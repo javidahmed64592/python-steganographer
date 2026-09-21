@@ -39,7 +39,6 @@ class ImageRouter(BaseRouter):
             response_model=PostEncodeResponse,
             methods=["POST"],
             limited=True,
-            authentication_required=True,
         )
         self.add_route(
             endpoint="/decode",
@@ -47,7 +46,6 @@ class ImageRouter(BaseRouter):
             response_model=PostDecodeResponse,
             methods=["POST"],
             limited=True,
-            authentication_required=True,
         )
         self.add_route(
             endpoint="/capacity",
@@ -55,7 +53,6 @@ class ImageRouter(BaseRouter):
             response_model=PostCapacityResponse,
             methods=["POST"],
             limited=True,
-            authentication_required=True,
         )
 
     def _get_image_instance_from_algorithm(self, algorithm: AlgorithmType) -> Image:

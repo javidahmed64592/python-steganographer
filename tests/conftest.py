@@ -160,7 +160,6 @@ def mock_image_router(
 ) -> ImageRouter:
     """Provide an ImageRouter instance for testing."""
     IMAGE_ROUTER.configure(
-        hashed_token="hashed_value",  # noqa: S106
         limiter=mock_limiter,
         rate_limit="10/minute",
     )

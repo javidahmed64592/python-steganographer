@@ -1,5 +1,6 @@
 "use client";
 
+// import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -14,9 +15,9 @@ const Navigation = () => {
 
   const navItems = [
     {
-      name: "Drive",
-      href: "/drive",
-      active: pathname === "/drive/",
+      name: "Home",
+      href: "/home",
+      active: pathname === "/home/",
     },
   ];
 
@@ -61,7 +62,7 @@ const Navigation = () => {
             <Link href="/" className="flex items-center space-x-3">
               {/* <Image
                 src="/logo.svg"
-                alt="Cloud Server Logo"
+                alt="Python Steganographer Logo"
                 width={32}
                 height={32}
                 className="neon-glow"
@@ -69,7 +70,7 @@ const Navigation = () => {
               /> */}
               <div className="flex flex-col">
                 <div className="nav-logo-text text-xl font-bold text-text-primary sm:text-xl">
-                  Cloud Server
+                  Python Steganographer
                 </div>
               </div>
             </Link>
@@ -82,7 +83,7 @@ const Navigation = () => {
               const normalized = (pathname || "").replace(/\/$/, "") || "/";
               const isActive =
                 normalized === item.href ||
-                (item.href === "/drive" && normalized === "/");
+                (item.href === "/home" && normalized === "/");
 
               return (
                 <Link
@@ -162,7 +163,7 @@ const Navigation = () => {
               const normalized = (pathname || "").replace(/\/$/, "") || "/";
               const isActive =
                 normalized === item.href ||
-                (item.href === "/drive" && normalized === "/");
+                (item.href === "/home" && normalized === "/");
 
               return (
                 <Link

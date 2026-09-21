@@ -51,36 +51,36 @@ describe("Navigation", () => {
     // Mock localStorage
     Storage.prototype.getItem = jest.fn(() => "test-api-key");
   });
-  it("renders the Cloud Server logo", () => {
+  it("renders the Python Steganographer logo", () => {
     render(<Navigation />);
-    expect(screen.getByText("Cloud Server")).toBeInTheDocument();
+    expect(screen.getByText("Python Steganographer")).toBeInTheDocument();
   });
 
   it("renders all navigation items", () => {
     render(<Navigation />);
     // Check that navigation items exist (they appear in both desktop and mobile)
-    expect(screen.getAllByText("Drive")).toHaveLength(2);
+    expect(screen.getAllByText("Home")).toHaveLength(2);
   });
 
   it("renders navigation links with correct hrefs", () => {
     render(<Navigation />);
     // Get desktop navigation links (first occurrence)
-    const driveLinks = screen.getAllByRole("link", {
-      name: /Drive/,
+    const homeLinks = screen.getAllByRole("link", {
+      name: /Home/,
     });
-    expect(driveLinks[0]).toHaveAttribute("href", "/drive");
+    expect(homeLinks[0]).toHaveAttribute("href", "/home");
   });
 
   it("applies active styling to current page", () => {
-    mockUsePathname.mockReturnValue("/drive");
+    mockUsePathname.mockReturnValue("/home");
 
     render(<Navigation />);
-    const driveLinks = screen.getAllByRole("link", {
-      name: /Drive/,
+    const homeLinks = screen.getAllByRole("link", {
+      name: /Home/,
     });
     // Both desktop and mobile links should have active styling
-    expect(driveLinks[0]).toHaveClass("font-bold", "text-border-accent");
-    expect(driveLinks[1]).toHaveClass("font-bold", "text-border-accent");
+    expect(homeLinks[0]).toHaveClass("font-bold", "text-border-accent");
+    expect(homeLinks[1]).toHaveClass("font-bold", "text-border-accent");
   });
 
   describe("Mobile Navigation", () => {
@@ -151,10 +151,10 @@ describe("Navigation", () => {
       expect(mobileMenu).toHaveClass("block");
 
       // Click a navigation link in mobile menu
-      const driveLinks = screen.getAllByRole("link", { name: /Drive/ });
-      const driveLink = driveLinks[1]; // Second one is in mobile menu
-      if (driveLink) {
-        fireEvent.click(driveLink);
+      const homeLinks = screen.getAllByRole("link", { name: /Home/ });
+      const homeLink = homeLinks[1]; // Second one is in mobile menu
+      if (homeLink) {
+        fireEvent.click(homeLink);
       }
 
       // Menu should be closed
@@ -170,20 +170,20 @@ describe("Navigation", () => {
       fireEvent.click(menuButton);
 
       // All navigation items should appear twice (desktop and mobile)
-      expect(screen.getAllByText("Drive")).toHaveLength(2);
+      expect(screen.getAllByText("Home")).toHaveLength(2);
     });
 
     it("applies active styling to current page in mobile menu", () => {
-      mockUsePathname.mockReturnValue("/drive");
+      mockUsePathname.mockReturnValue("/home");
 
       render(<Navigation />);
       const menuButton = screen.getByRole("button", { name: /Open main menu/ });
 
       fireEvent.click(menuButton);
 
-      const driveLinks = screen.getAllByRole("link", { name: /Drive/ });
-      const mobileDriveLink = driveLinks[1]; // Second one is in mobile menu
-      expect(mobileDriveLink).toHaveClass("font-bold", "text-border-accent");
+      const homeLinks = screen.getAllByRole("link", { name: /Home/ });
+      const mobileHomeLink = homeLinks[1]; // Second one is in mobile menu
+      expect(mobileHomeLink).toHaveClass("font-bold", "text-border-accent");
     });
   });
 
@@ -237,12 +237,12 @@ describe("Navigation", () => {
       render(<Navigation />);
 
       // Check that both the logo and health indicator are present
-      expect(screen.getByText("Cloud Server")).toBeInTheDocument();
+      expect(screen.getByText("Python Steganographer")).toBeInTheDocument();
       expect(screen.getByTitle("Server: ONLINE")).toBeInTheDocument();
 
       // Check that they are both in the navigation
       const nav = screen.getByRole("navigation");
-      expect(nav).toContainElement(screen.getByText("Cloud Server"));
+      expect(nav).toContainElement(screen.getByText("Python Steganographer"));
       expect(nav).toContainElement(screen.getByTitle("Server: ONLINE"));
     });
 

@@ -172,10 +172,6 @@ All PRs must pass:
 - Best for: JPEG and scenarios with compression
 - Config: `dct_block_size`, `dct_coefficient`, `dct_quantization_factor`
 
-### Environment Variables
-
-- `API_TOKEN_HASH` - SHA-256 hash of API token (only var required, inherited from python-template-server)
-
 ### Configuration Files
 
 - `configuration/config.json` - Server and steganography configuration

@@ -3,7 +3,6 @@ import { usePathname } from "next/navigation";
 import React from "react";
 
 import Navigation from "@/components/Navigation";
-import { AuthProvider } from "@/contexts/AuthContext";
 import { useHealthStatus } from "@/lib/api";
 
 // Mock Next.js Link component
@@ -38,11 +37,6 @@ jest.mock("../../lib/api", () => ({
   useHealthStatus: jest.fn(),
 }));
 
-// Helper function to render components with AuthProvider
-const renderWithAuth = (ui: React.ReactElement) => {
-  return render(<AuthProvider>{ui}</AuthProvider>);
-};
-
 const mockUseHealthStatus = useHealthStatus as jest.MockedFunction<
   typeof useHealthStatus
 >;
@@ -57,47 +51,47 @@ describe("Navigation", () => {
     // Mock localStorage
     Storage.prototype.getItem = jest.fn(() => "test-api-key");
   });
-  it("renders the Python Steganographer logo", () => {
-    renderWithAuth(<Navigation />);
-    expect(screen.getByText("Python Steganographer")).toBeInTheDocument();
+  it("renders the Cloud Server logo", () => {
+    render(<Navigation />);
+    expect(screen.getByText("Cloud Server")).toBeInTheDocument();
   });
 
   it("renders all navigation items", () => {
-    renderWithAuth(<Navigation />);
+    render(<Navigation />);
     // Check that navigation items exist (they appear in both desktop and mobile)
-    expect(screen.getAllByText("Home")).toHaveLength(2);
+    expect(screen.getAllByText("Drive")).toHaveLength(2);
   });
 
   it("renders navigation links with correct hrefs", () => {
-    renderWithAuth(<Navigation />);
+    render(<Navigation />);
     // Get desktop navigation links (first occurrence)
-    const homeLinks = screen.getAllByRole("link", {
-      name: /Home/,
+    const driveLinks = screen.getAllByRole("link", {
+      name: /Drive/,
     });
-    expect(homeLinks[0]).toHaveAttribute("href", "/home");
+    expect(driveLinks[0]).toHaveAttribute("href", "/drive");
   });
 
   it("applies active styling to current page", () => {
-    mockUsePathname.mockReturnValue("/home");
+    mockUsePathname.mockReturnValue("/drive");
 
-    renderWithAuth(<Navigation />);
-    const homeLinks = screen.getAllByRole("link", {
-      name: /Home/,
+    render(<Navigation />);
+    const driveLinks = screen.getAllByRole("link", {
+      name: /Drive/,
     });
     // Both desktop and mobile links should have active styling
-    expect(homeLinks[0]).toHaveClass("font-bold", "text-border-accent");
-    expect(homeLinks[1]).toHaveClass("font-bold", "text-border-accent");
+    expect(driveLinks[0]).toHaveClass("font-bold", "text-border-accent");
+    expect(driveLinks[1]).toHaveClass("font-bold", "text-border-accent");
   });
 
   describe("Mobile Navigation", () => {
     it("renders mobile menu button", () => {
-      renderWithAuth(<Navigation />);
+      render(<Navigation />);
       const menuButton = screen.getByRole("button", { name: /Open main menu/ });
       expect(menuButton).toBeInTheDocument();
     });
 
     it("toggles mobile menu when button is clicked", () => {
-      renderWithAuth(<Navigation />);
+      render(<Navigation />);
       const menuButton = screen.getByRole("button", { name: /Open main menu/ });
 
       // Find all elements with lg:hidden class and get the second one (the mobile menu content)
@@ -122,7 +116,7 @@ describe("Navigation", () => {
     });
 
     it("shows hamburger icon when menu is closed", () => {
-      renderWithAuth(<Navigation />);
+      render(<Navigation />);
       const hamburgerIcon = screen
         .getByRole("button", { name: /Open main menu/ })
         .querySelector('svg[class*="block"]');
@@ -130,7 +124,7 @@ describe("Navigation", () => {
     });
 
     it("shows close icon when menu is open", () => {
-      renderWithAuth(<Navigation />);
+      render(<Navigation />);
       const menuButton = screen.getByRole("button", { name: /Open main menu/ });
 
       fireEvent.click(menuButton);
@@ -142,7 +136,7 @@ describe("Navigation", () => {
     });
 
     it("closes mobile menu when navigation link is clicked", () => {
-      renderWithAuth(<Navigation />);
+      render(<Navigation />);
       const menuButton = screen.getByRole("button", { name: /Open main menu/ });
 
       // Open menu
@@ -157,10 +151,10 @@ describe("Navigation", () => {
       expect(mobileMenu).toHaveClass("block");
 
       // Click a navigation link in mobile menu
-      const homeLinks = screen.getAllByRole("link", { name: /Home/ });
-      const homeLink = homeLinks[1]; // Second one is in mobile menu
-      if (homeLink) {
-        fireEvent.click(homeLink);
+      const driveLinks = screen.getAllByRole("link", { name: /Drive/ });
+      const driveLink = driveLinks[1]; // Second one is in mobile menu
+      if (driveLink) {
+        fireEvent.click(driveLink);
       }
 
       // Menu should be closed
@@ -170,26 +164,26 @@ describe("Navigation", () => {
     });
 
     it("renders all navigation items in mobile menu", () => {
-      renderWithAuth(<Navigation />);
+      render(<Navigation />);
       const menuButton = screen.getByRole("button", { name: /Open main menu/ });
 
       fireEvent.click(menuButton);
 
       // All navigation items should appear twice (desktop and mobile)
-      expect(screen.getAllByText("Home")).toHaveLength(2);
+      expect(screen.getAllByText("Drive")).toHaveLength(2);
     });
 
     it("applies active styling to current page in mobile menu", () => {
-      mockUsePathname.mockReturnValue("/home");
+      mockUsePathname.mockReturnValue("/drive");
 
-      renderWithAuth(<Navigation />);
+      render(<Navigation />);
       const menuButton = screen.getByRole("button", { name: /Open main menu/ });
 
       fireEvent.click(menuButton);
 
-      const homeLinks = screen.getAllByRole("link", { name: /Home/ });
-      const mobileHomeLink = homeLinks[1]; // Second one is in mobile menu
-      expect(mobileHomeLink).toHaveClass("font-bold", "text-border-accent");
+      const driveLinks = screen.getAllByRole("link", { name: /Drive/ });
+      const mobileDriveLink = driveLinks[1]; // Second one is in mobile menu
+      expect(mobileDriveLink).toHaveClass("font-bold", "text-border-accent");
     });
   });
 
@@ -197,7 +191,7 @@ describe("Navigation", () => {
     it("renders HealthIndicator in the navigation", () => {
       mockUseHealthStatus.mockReturnValue("online");
 
-      renderWithAuth(<Navigation />);
+      render(<Navigation />);
 
       // The HealthIndicator should render a circular indicator
       const indicators = screen
@@ -209,7 +203,7 @@ describe("Navigation", () => {
     it("displays online status indicator when server is online", () => {
       mockUseHealthStatus.mockReturnValue("online");
 
-      renderWithAuth(<Navigation />);
+      render(<Navigation />);
 
       const indicator = screen.getByTitle("Server: ONLINE");
       expect(indicator).toBeInTheDocument();
@@ -219,7 +213,7 @@ describe("Navigation", () => {
     it("displays offline status indicator when server is offline", () => {
       mockUseHealthStatus.mockReturnValue("offline");
 
-      renderWithAuth(<Navigation />);
+      render(<Navigation />);
 
       const indicator = screen.getByTitle("Server: OFFLINE");
       expect(indicator).toBeInTheDocument();
@@ -229,7 +223,7 @@ describe("Navigation", () => {
     it("displays checking status indicator when status is being checked", () => {
       mockUseHealthStatus.mockReturnValue("checking");
 
-      renderWithAuth(<Navigation />);
+      render(<Navigation />);
 
       const indicator = screen.getByTitle("Server: CHECKING");
       expect(indicator).toBeInTheDocument();
@@ -240,22 +234,22 @@ describe("Navigation", () => {
     it("positions HealthIndicator next to the logo", () => {
       mockUseHealthStatus.mockReturnValue("online");
 
-      renderWithAuth(<Navigation />);
+      render(<Navigation />);
 
       // Check that both the logo and health indicator are present
-      expect(screen.getByText("Python Steganographer")).toBeInTheDocument();
+      expect(screen.getByText("Cloud Server")).toBeInTheDocument();
       expect(screen.getByTitle("Server: ONLINE")).toBeInTheDocument();
 
       // Check that they are both in the navigation
       const nav = screen.getByRole("navigation");
-      expect(nav).toContainElement(screen.getByText("Python Steganographer"));
+      expect(nav).toContainElement(screen.getByText("Cloud Server"));
       expect(nav).toContainElement(screen.getByTitle("Server: ONLINE"));
     });
 
     it("includes tooltip with status information", () => {
       mockUseHealthStatus.mockReturnValue("online");
 
-      renderWithAuth(<Navigation />);
+      render(<Navigation />);
 
       const healthIndicator = screen.getByTitle("Server: ONLINE");
       expect(healthIndicator).toHaveAttribute("title", "Server: ONLINE");
@@ -264,7 +258,7 @@ describe("Navigation", () => {
     it("calls useHealthStatus hook when Navigation is rendered", () => {
       mockUseHealthStatus.mockReturnValue("online");
 
-      renderWithAuth(<Navigation />);
+      render(<Navigation />);
 
       expect(mockUseHealthStatus).toHaveBeenCalledTimes(1);
     });

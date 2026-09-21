@@ -6,16 +6,6 @@ export interface BaseResponse {
   timestamp: string;
 }
 
-// Authentication types
-export interface LoginResponse extends BaseResponse {}
-
-export interface AuthContextType {
-  apiKey: string | null;
-  isAuthenticated: boolean;
-  login: (apiKey: string) => Promise<void>;
-  logout: () => void;
-}
-
 // Steganography types
 export enum AlgorithmType {
   LSB = "lsb",
@@ -24,6 +14,10 @@ export enum AlgorithmType {
 
 // Response types
 export interface HealthResponse extends BaseResponse {}
+
+export interface GetAuthEnabledResponse extends BaseResponse {
+  auth_enabled: boolean;
+}
 
 export interface EncodeResponse extends BaseResponse {
   imageData: string; // Base64 encoded image
